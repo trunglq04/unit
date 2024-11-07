@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Unit.API.ActionFilter;
 using Unit.Service.Contracts;
 using Unit.Shared.DataTransferObjects;
@@ -29,6 +30,15 @@ namespace Unit.API.Controllers
         public async Task<IActionResult> SignUp([FromBody] SignUpDtoRequest request)
         {
             await _service.AuthenticationService.SignUp(request);
+            return Ok();
+        }
+
+        [HttpPost("SignOut")]
+        [Authorize]
+        public async Task<IActionResult> SignOut([FromHeader(Name = "Authorization")] string AccessToken)
+        {
+            var accessToken = AccessToken.Split(" ").Last()!;
+            await _service.AuthenticationService.SignOut(accessToken);
             return Ok();
         }
 

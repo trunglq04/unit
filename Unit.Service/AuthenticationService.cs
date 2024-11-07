@@ -120,6 +120,16 @@ namespace Unit.Service
             await _provider.SignUpAsync(signUpRequest);
         }
 
+        public async Task SignOut(string AccessToken)
+        {
+            var signOutRequest = new GlobalSignOutRequest()
+            {
+                AccessToken = AccessToken
+            };
+
+            await _provider.GlobalSignOutAsync(signOutRequest);
+        }
+
         public async Task<UserType?> GetUserByEmail(string email)
         {
             var listUsersRequest = new ListUsersRequest
@@ -156,5 +166,6 @@ namespace Unit.Service
 
             await _provider.ConfirmForgotPasswordAsync(request);
         }
+
     }
 }

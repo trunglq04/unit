@@ -10,6 +10,8 @@ namespace Unit.Service.Contracts
 
         Task SignUp(SignUpDtoRequest request);
 
+        Task SignOut(string AccessToken);
+
         Task ConfirmSignUp(ConfirmSignUpDtoRequest request);
 
         Task IsEmailConfirmed(string email);
