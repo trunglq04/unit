@@ -23,5 +23,7 @@ namespace Unit.Service.Contracts
         Task SendCodeResetPassword(string email);
 
         Task ResetPassword(ResetPasswordDtoRequest request);
+
+        Task<TokenDtoResponse> RefreshAccessToken(string refreshToken);
     }
 }

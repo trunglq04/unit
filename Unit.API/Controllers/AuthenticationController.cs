@@ -78,5 +78,12 @@ namespace Unit.API.Controllers
             return Ok();
         }
 
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshAccessToken(RefreshTokenDtoRequest request)
+        {
+            var response = await _service.AuthenticationService.RefreshAccessToken(request.RefreshToken);
+            return Ok(response);
+        }
+
     }
 }

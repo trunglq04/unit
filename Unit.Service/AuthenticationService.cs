@@ -167,5 +167,23 @@ namespace Unit.Service
             await _provider.ConfirmForgotPasswordAsync(request);
         }
 
+        public async Task<TokenDtoResponse> RefreshAccessToken(string refreshToken)
+        {
+            var authRequest = new InitiateAuthRequest()
+            {
+                AuthFlow = AuthFlowType.REFRESH_TOKEN,
+                ClientId = _clientId,
+                AuthParameters = new Dictionary<string, string>
+                {
+                    { "REFRESH_TOKEN", refreshToken }
+                }
+            };
+
+            var authResponse = await _provider.InitiateAuthAsync(authRequest);
+            var tokens = _mapper.Map<TokenDtoResponse>(authResponse.AuthenticationResult);
+
+            return tokens;
+        }
+
     }
 }
