@@ -1,5 +1,9 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc;
 using NLog;
+using Unit.API.ActionFilter;
+using Unit.API.Configuration;
 using Unit.API.Extensions;
 using Unit.Service.Contracts;
 
@@ -13,6 +17,18 @@ builder.Services.ConfigureLogger();
 builder.Services.ConfigureServiceManager();
 builder.Services.ConfigureAWSConfiguration(builder.Configuration);
 builder.Services.ConfigureAWS(builder.Configuration);
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.SuppressModelStateInvalidFilter = true;
+});
+builder.Services.AddScoped<ValidationFilterAttribute>();
+builder.Services.AddScoped<ValidationFilterPasswordConfirmation>();
+builder.Services.AddAuthorization();
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer();
+builder.Services.ConfigureOptions<JwtBearerConfigurationOptions>();
+
 builder.Services.AddControllers();
 
 
@@ -26,9 +42,12 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
     ForwardedHeaders = ForwardedHeaders.All
 });
 app.UseCors("CorsPolicy");
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
 
+
 app.Run();
+
 
