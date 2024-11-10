@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using NLog;
 using Unit.API.ActionFilter;
 using Unit.API.Configuration;
 using Unit.API.Extensions;
+using Unit.Entities.ConfigurationModels;
+using Unit.Service;
 using Unit.Service.Contracts;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -47,6 +50,25 @@ app.UseAuthorization();
 app.MapControllers();
 
 
+
+// Load configuration for AWS
+builder.Services.Configure<AWSConfiguration>(builder.Configuration.GetSection("AWS"));
+
+// Register services
+builder.Services.AddSingleton<S3Service>();
+
+// Register other services
+// Example: builder.Services.AddSingleton<YourOtherService>();
+
+// Other existing service registrations
+builder.Services.AddControllers();
+// Add any other services you need here...
+
+
+// Configure middlewares
+app.UseHttpsRedirection();
+app.UseAuthorization();
+app.MapControllers();
 
 app.Run();
 
