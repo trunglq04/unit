@@ -57,7 +57,7 @@ namespace Unit.Service
             await _repository.User.CreateUserAsync(newUser);
         }
 
-        public async Task IsEmailConfirmed(string email)
+        public async Task IsEmailConfirmed(string email, bool isConfirmed)
         {
             var request = new AdminGetUserRequest
             {
@@ -70,9 +70,9 @@ namespace Unit.Service
 
             var emailVerifiedAttribute = response.UserAttributes
                 .FirstOrDefault(attr => attr.Name == "email_verified");
-            if (emailVerifiedAttribute != null && emailVerifiedAttribute.Value == "false")
+            if (emailVerifiedAttribute != null && emailVerifiedAttribute.Value == "false" && isConfirmed)
                 throw new BadRequestException(AuthExMsg.EmailIsNotConfirmed);
-            if (emailVerifiedAttribute != null && emailVerifiedAttribute.Value == "true")
+            if (emailVerifiedAttribute != null && emailVerifiedAttribute.Value == "true" && !isConfirmed)
                 throw new BadRequestException(AuthExMsg.EmailAlreadyConfirmed);
         }
 

@@ -52,7 +52,7 @@ namespace Unit.API.Controllers
         [HttpGet("Resend-Confirmation-Code")]
         public async Task<IActionResult> ResendConfirmationCode([FromQuery] string email)
         {
-            await _service.AuthenticationService.IsEmailConfirmed(email);
+            await _service.AuthenticationService.IsEmailConfirmed(email, isConfirmed: false);
 
             await _service.AuthenticationService.ResendConfirmationCode(email);
             return Ok();
@@ -61,7 +61,7 @@ namespace Unit.API.Controllers
         [HttpGet("send-reset-password-Code")]
         public async Task<IActionResult> SendResetPasswordCode([FromQuery] string email)
         {
-            await _service.AuthenticationService.IsEmailConfirmed(email);
+            await _service.AuthenticationService.IsEmailConfirmed(email, isConfirmed: true);
 
             await _service.AuthenticationService.SendCodeResetPassword(email);
             return Ok();
@@ -71,7 +71,7 @@ namespace Unit.API.Controllers
         [ServiceFilter(typeof(ValidationFilterPasswordConfirmation))]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDtoRequest request)
         {
-            await _service.AuthenticationService.IsEmailConfirmed(request.Email);
+            await _service.AuthenticationService.IsEmailConfirmed(request.Email, isConfirmed: true);
 
             await _service.AuthenticationService.ResetPassword(request);
 

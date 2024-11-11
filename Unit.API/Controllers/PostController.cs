@@ -1,27 +1,21 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Unit.API.ActionFilter;
 using Unit.Service.Contracts;
-using Unit.Shared.RequestFeatures;
 
 namespace Unit.API.Controllers
 {
-    [Route("api/user")]
+    [Route("api/post")]
     [ApiController]
     [ServiceFilter(typeof(ValidationFilterAttribute))]
-    public class UserController : ControllerBase
+    public class PostController : ControllerBase
     {
         private readonly IServiceManager _service;
 
-        public UserController(IServiceManager service)
+        public PostController(IServiceManager service)
         {
             _service = service;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetUser([FromQuery] UserParameters userParameters)
-        {
 
-            return Ok();
-        }
     }
 }
