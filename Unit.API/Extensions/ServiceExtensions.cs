@@ -25,7 +25,7 @@ namespace Unit.API.Extensions
                 options.AddPolicy("CorsPolicy", builder =>
                 builder
                 .AllowAnyOrigin()
-                .AllowAnyHeader()
+                .AllowAnyMethod()
                 .AllowAnyHeader());
             });
 
