@@ -14,7 +14,7 @@ namespace Unit.Service.Contracts
 
         Task ConfirmSignUp(ConfirmSignUpDtoRequest request);
 
-        Task IsEmailConfirmed(string email);
+        Task IsEmailConfirmed(string email, bool isConfirmed);
 
         Task ResendConfirmationCode(string email);
 
