@@ -2,7 +2,12 @@
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.Extensions.NETCore.Setup;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Unit.API.Configuration;
 using Unit.Entities.ConfigurationModels;
 using Unit.Service;
 using Unit.Service.Contracts;
@@ -48,5 +53,6 @@ namespace Unit.API.Extensions
             services.AddAWSService<IAmazonCognitoIdentityProvider>();
             services.AddScoped<IDynamoDBContext, DynamoDBContext>();
         }
+
     }
 }

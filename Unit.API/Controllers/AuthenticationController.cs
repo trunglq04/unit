@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Unit.Entities.ErrorModel;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Unit.API.ActionFilter;
 using Unit.Service.Contracts;
 using Unit.Shared.DataTransferObjects;
 
@@ -7,6 +8,7 @@ namespace Unit.API.Controllers
 {
     [Route("api/auth")]
     [ApiController]
+    [ServiceFilter(typeof(ValidationFilterAttribute))]
     public class AuthenticationController : ControllerBase
     {
         private readonly IServiceManager _service;
@@ -24,10 +26,19 @@ namespace Unit.API.Controllers
         }
 
         [HttpPost("SignUp")]
+        [ServiceFilter(typeof(ValidationFilterPasswordConfirmation))]
         public async Task<IActionResult> SignUp([FromBody] SignUpDtoRequest request)
         {
-            if (request.Password != request.Confirmpassword) return BadRequest(request);
             await _service.AuthenticationService.SignUp(request);
+            return Ok();
+        }
+
+        [HttpPost("SignOut")]
+        [Authorize]
+        public async Task<IActionResult> SignOut([FromHeader(Name = "Authorization")] string AccessToken)
+        {
+            var accessToken = AccessToken.Split(" ").Last()!;
+            await _service.AuthenticationService.SignOut(accessToken);
             return Ok();
         }
 
@@ -45,6 +56,33 @@ namespace Unit.API.Controllers
 
             await _service.AuthenticationService.ResendConfirmationCode(email);
             return Ok();
+        }
+
+        [HttpGet("send-reset-password-Code")]
+        public async Task<IActionResult> SendResetPasswordCode([FromQuery] string email)
+        {
+            await _service.AuthenticationService.IsEmailConfirmed(email);
+
+            await _service.AuthenticationService.SendCodeResetPassword(email);
+            return Ok();
+        }
+
+        [HttpPost("reset-password")]
+        [ServiceFilter(typeof(ValidationFilterPasswordConfirmation))]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDtoRequest request)
+        {
+            await _service.AuthenticationService.IsEmailConfirmed(request.Email);
+
+            await _service.AuthenticationService.ResetPassword(request);
+
+            return Ok();
+        }
+
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshAccessToken(RefreshTokenDtoRequest request)
+        {
+            var response = await _service.AuthenticationService.RefreshAccessToken(request.RefreshToken);
+            return Ok(response);
         }
 
     }

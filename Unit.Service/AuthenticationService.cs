@@ -5,6 +5,8 @@ using Amazon.Extensions.CognitoAuthentication;
 using AutoMapper;
 using Microsoft.Extensions.Options;
 using Unit.Entities.ConfigurationModels;
+using Unit.Entities.Exceptions;
+using Unit.Entities.Exceptions.Messages;
 using Unit.Entities.Models;
 using Unit.Service.Contracts;
 using Unit.Shared.DataTransferObjects;
@@ -42,19 +44,19 @@ namespace Unit.Service
             var confirmRequest = new ConfirmSignUpRequest
             {
                 ClientId = _clientId,
-                Username = request.email,
-                ConfirmationCode = request.confirmCode
+                Username = request.Email,
+                ConfirmationCode = request.ConfirmCode
             };
 
             await _provider.ConfirmSignUpAsync(confirmRequest);
 
-            var user = await GetUserByEmail(request.email);
-            var userName = request.email.Split('@')[0];
+            var user = await GetUserByEmail(request.Email);
+            var userName = request.Email.Split('@')[0];
             var newUser = new User() { UserName = userName, UserId = user.Username, CreatedAt = user.UserCreateDate, LastModified = user.UserLastModifiedDate, Private = false, Status = true };
             await _context.SaveAsync(newUser);
         }
 
-        public async Task<bool> IsEmailConfirmed(string email)
+        public async Task IsEmailConfirmed(string email)
         {
             var request = new AdminGetUserRequest
             {
@@ -67,8 +69,10 @@ namespace Unit.Service
 
             var emailVerifiedAttribute = response.UserAttributes
                 .FirstOrDefault(attr => attr.Name == "email_verified");
-
-            return emailVerifiedAttribute != null && emailVerifiedAttribute.Value == "true";
+            if (emailVerifiedAttribute != null && emailVerifiedAttribute.Value == "false")
+                throw new BadRequestException(AuthExMsg.EmailIsNotConfirmed);
+            if (emailVerifiedAttribute != null && emailVerifiedAttribute.Value == "true")
+                throw new BadRequestException(AuthExMsg.EmailAlreadyConfirmed);
         }
 
         public async Task ResendConfirmationCode(string email)
@@ -114,14 +118,23 @@ namespace Unit.Service
                 }
             };
             await _provider.SignUpAsync(signUpRequest);
+        }
 
+        public async Task SignOut(string AccessToken)
+        {
+            var signOutRequest = new GlobalSignOutRequest()
+            {
+                AccessToken = AccessToken
+            };
+
+            await _provider.GlobalSignOutAsync(signOutRequest);
         }
 
         public async Task<UserType?> GetUserByEmail(string email)
         {
             var listUsersRequest = new ListUsersRequest
             {
-                UserPoolId = _userPool.PoolID,  // ID của user pool mà bạn đã cấu hình
+                UserPoolId = _userPool.PoolID,
                 Filter = $"email = \"{email}\""
             };
 
@@ -129,5 +142,48 @@ namespace Unit.Service
             var user = response.Users.FirstOrDefault();
             return user;
         }
+
+        public async Task SendCodeResetPassword(string email)
+        {
+            var request = new ForgotPasswordRequest()
+            {
+                Username = email,
+                ClientId = _clientId
+            };
+
+            var response = await _provider.ForgotPasswordAsync(request);
+        }
+
+        public async Task ResetPassword(ResetPasswordDtoRequest requestDto)
+        {
+            var request = new ConfirmForgotPasswordRequest()
+            {
+                ConfirmationCode = requestDto.Code,
+                Password = requestDto.Password,
+                Username = requestDto.Email,
+                ClientId = _clientId
+            };
+
+            await _provider.ConfirmForgotPasswordAsync(request);
+        }
+
+        public async Task<TokenDtoResponse> RefreshAccessToken(string refreshToken)
+        {
+            var authRequest = new InitiateAuthRequest()
+            {
+                AuthFlow = AuthFlowType.REFRESH_TOKEN,
+                ClientId = _clientId,
+                AuthParameters = new Dictionary<string, string>
+                {
+                    { "REFRESH_TOKEN", refreshToken }
+                }
+            };
+
+            var authResponse = await _provider.InitiateAuthAsync(authRequest);
+            var tokens = _mapper.Map<TokenDtoResponse>(authResponse.AuthenticationResult);
+
+            return tokens;
+        }
+
     }
 }

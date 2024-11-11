@@ -8,7 +8,7 @@ namespace Unit.API
     {
         public MappingProfile()
         {
-            CreateMap<TokenDtoResponse, AuthenticationResultType>();
+            CreateMap<AuthenticationResultType, TokenDtoResponse>();
         }
     }
 }
