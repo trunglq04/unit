@@ -1,6 +1,7 @@
 ﻿using Amazon.CognitoIdentityProvider.Model;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.Runtime.Internal;
+using Unit.Repository.Contracts;
 using Unit.Service.Contracts;
 
 namespace Unit.Service
@@ -9,11 +10,11 @@ namespace Unit.Service
     {
         private readonly ILoggerManager _logger;
 
-        private readonly IDynamoDBContext _context;
+        private readonly IRepositoryManager _repository;
 
-        public UserService(IDynamoDBContext context, ILoggerManager logger)
+        public UserService(IRepositoryManager repository, ILoggerManager logger)
         {
-            _context = context;
+            _repository = repository;
             _logger = logger;
         }
 

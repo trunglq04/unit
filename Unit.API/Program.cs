@@ -15,6 +15,7 @@ builder.Services.ConfigureCors();
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.ConfigureLogger();
 builder.Services.ConfigureServiceManager();
+builder.Services.ConfigureRepositoryManager();
 builder.Services.ConfigureAWSConfiguration(builder.Configuration);
 builder.Services.ConfigureAWS(builder.Configuration);
 builder.Services.Configure<ApiBehaviorOptions>(options =>

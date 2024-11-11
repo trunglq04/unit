@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Unit.Repository.Contracts\Unit.Repository.Contracts.csproj" />
     <ProjectReference Include="..\Unit.Service.Contracts\Unit.Service.Contracts.csproj" />
   </ItemGroup>
 

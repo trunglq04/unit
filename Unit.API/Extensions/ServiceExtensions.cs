@@ -9,6 +9,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Unit.API.Configuration;
 using Unit.Entities.ConfigurationModels;
+using Unit.Repository.Contracts;
+using Unit.Repository;
 using Unit.Service;
 using Unit.Service.Contracts;
 
@@ -31,6 +33,9 @@ namespace Unit.API.Extensions
 
         public static void ConfigureServiceManager(this IServiceCollection services)
             => services.AddScoped<IServiceManager, ServiceManager>();
+
+        public static void ConfigureRepositoryManager(this IServiceCollection services)
+            => services.AddScoped<IRepositoryManager, RepositoryManager>();
 
         public static void ConfigureAWSConfiguration(this IServiceCollection services, IConfiguration configuration)
             => services.Configure<AWSConfiguration>(configuration.GetSection("AWS"));

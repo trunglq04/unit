@@ -8,6 +8,7 @@ using Unit.Entities.ConfigurationModels;
 using Unit.Entities.Exceptions;
 using Unit.Entities.Exceptions.Messages;
 using Unit.Entities.Models;
+using Unit.Repository.Contracts;
 using Unit.Service.Contracts;
 using Unit.Shared.DataTransferObjects;
 
@@ -17,7 +18,7 @@ namespace Unit.Service
     {
         private readonly ILoggerManager _logger;
 
-        private readonly IDynamoDBContext _context;
+        private readonly IRepositoryManager _repository;
 
         private readonly IAmazonCognitoIdentityProvider _provider;
 
@@ -27,9 +28,9 @@ namespace Unit.Service
 
         private readonly IMapper _mapper;
 
-        public AuthenticationService(IDynamoDBContext context, ILoggerManager logger, IAmazonCognitoIdentityProvider cognitoProvider, IOptions<AWSConfiguration> configuration, IMapper mapper)
+        public AuthenticationService(IRepositoryManager repository, ILoggerManager logger, IAmazonCognitoIdentityProvider cognitoProvider, IOptions<AWSConfiguration> configuration, IMapper mapper)
         {
-            _context = context;
+            _repository = repository;
             _logger = logger;
             _provider = cognitoProvider;
 
@@ -53,7 +54,7 @@ namespace Unit.Service
             var user = await GetUserByEmail(request.Email);
             var userName = request.Email.Split('@')[0];
             var newUser = new User() { UserName = userName, UserId = user.Username, CreatedAt = user.UserCreateDate, LastModified = user.UserLastModifiedDate, Private = false, Status = true };
-            await _context.SaveAsync(newUser);
+            await _repository.User.CreateUserAsync(newUser);
         }
 
         public async Task IsEmailConfirmed(string email)
