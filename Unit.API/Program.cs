@@ -20,7 +20,7 @@ var app = builder.Build();
 var logger = app.Services.GetRequiredService<ILoggerManager>();
 app.ConfigureExceptionHandler(logger);
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.All
