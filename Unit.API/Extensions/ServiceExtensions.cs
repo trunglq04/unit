@@ -28,7 +28,8 @@ namespace Unit.API.Extensions
                 builder
                 .AllowAnyOrigin()
                 .AllowAnyMethod()
-                .AllowAnyHeader());
+                .AllowAnyHeader()
+                .WithExposedHeaders("X-Pagination"));
             });
 
         public static void ConfigureServiceManager(this IServiceCollection services)

@@ -1,11 +1,10 @@
 ﻿using Amazon.CognitoIdentityProvider;
-using Amazon.DynamoDBv2.DataModel;
 using AutoMapper;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Unit.Entities.ConfigurationModels;
 using Unit.Repository.Contracts;
 using Unit.Service.Contracts;
+using Unit.Shared.DataTransferObjects;
 
 namespace Unit.Service
 {
@@ -14,9 +13,9 @@ namespace Unit.Service
         private readonly Lazy<IUserService> _userService;
         private readonly Lazy<IAuthenticationService> _authenticationService;
 
-        public ServiceManager(IRepositoryManager repositoryManager, ILoggerManager logger, IAmazonCognitoIdentityProvider cognitoProvider, IOptions<AWSConfiguration> configuration, IMapper mapper)
+        public ServiceManager(IRepositoryManager repositoryManager, ILoggerManager logger, IAmazonCognitoIdentityProvider cognitoProvider, IOptions<AWSConfiguration> configuration, IMapper mapper, IDataShaper<UserDto> userShaper)
         {
-            _userService = new Lazy<IUserService>(() => new UserService(repositoryManager, logger));
+            _userService = new Lazy<IUserService>(() => new UserService(repositoryManager, logger, mapper, userShaper));
             _authenticationService = new Lazy<IAuthenticationService>(() => new AuthenticationService(repositoryManager, logger, cognitoProvider, configuration, mapper));
         }
 
