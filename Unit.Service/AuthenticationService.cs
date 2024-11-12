@@ -53,7 +53,15 @@ namespace Unit.Service
 
             var user = await GetUserByEmail(request.Email);
             var userName = request.Email.Split('@')[0];
-            var newUser = new User() { UserName = userName, UserId = user.Username, CreatedAt = user.UserCreateDate, LastModified = user.UserLastModifiedDate, Private = false, Status = true };
+            var newUser = new User()
+            {
+                UserName = userName,
+                UserId = user.Username,
+                CreatedAt = user.UserCreateDate,
+                LastModified = user.UserLastModifiedDate,
+                Private = false,
+                Active = true
+            };
             await _repository.User.CreateUserAsync(newUser);
         }
 

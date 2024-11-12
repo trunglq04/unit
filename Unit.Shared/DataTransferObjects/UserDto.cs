@@ -2,48 +2,38 @@
 
 namespace Unit.Shared.DataTransferObjects
 {
-    public record UserDto
+    public class UserDto
     {
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string? UserName { get; init; }
+        public string? UserName { get; set; }
 
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string? UserId { get; init; }
+        public string? UserId { get; set; }
 
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string? PhoneNumber { get; init; }
+        public string? PhoneNumber { get; set; }
 
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public DateTime? DateOfBirth { get; init; }
+        public DateTime? DateOfBirth { get; set; }
 
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string? ProfilePicture { get; init; }
+        public string? ProfilePicture { get; set; }
 
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string? Bio { get; init; }
+        public string? Bio { get; set; }
 
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public List<string>? Followers { get; init; }
+        public List<string>? Followers { get; set; }
 
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public List<string>? Following { get; init; }
+        public int? NumberOfFollwers { get; set; }
 
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public List<string>? BlockedUsers { get; init; }
+        public List<string>? Following { get; set; }
 
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public bool? Status { get; init; } // e.g., "active", "inactive"
+        public int? NumberOfFollowing { get; set; }
 
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public bool? Private { get; init; } // "public" or "private"
+        public List<string>? BlockedUsers { get; set; }
 
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public DateTime? CreatedAt { get; init; }
+        public bool? Active { get; set; } // e.g., "active", "inactive"
 
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public DateTime? LastModified { get; init; }
+        public bool? Private { get; set; } // "public" or "private"
 
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public List<FollowRequestDto>? FollowRequests { get; init; }
+        public DateTime? CreatedAt { get; set; }
+
+        public DateTime? LastModified { get; set; }
+
+        public List<FollowRequestDto>? FollowRequests { get; set; }
     }
 }

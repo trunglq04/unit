@@ -5,11 +5,12 @@ namespace Unit.Entities.Models
     [DynamoDBTable("Users")]
     public class User
     {
-        [DynamoDBHashKey("user_name")] // Partition Key
-        public string UserName { get; set; }
 
-        [DynamoDBRangeKey("user_id")]
+        [DynamoDBHashKey("user_id")]// Partition Key
         public string UserId { get; set; }
+
+        [DynamoDBProperty("user_name")]
+        public string UserName { get; set; }
 
         [DynamoDBProperty("phone_number")]
         public string PhoneNumber { get; set; }
@@ -32,8 +33,11 @@ namespace Unit.Entities.Models
         [DynamoDBProperty("blocked_users")]
         public List<string> BlockedUsers { get; set; } = new List<string>();
 
-        [DynamoDBProperty("status")]
-        public bool Status { get; set; } // e.g., "active", "inactive"
+        [DynamoDBProperty("conversation_id")]
+        public List<string> ConversationId { get; set; } = new List<string>();
+
+        [DynamoDBProperty("active")]
+        public bool Active { get; set; } // e.g., "active", "inactive"
 
         [DynamoDBProperty("private")]
         public bool Private { get; set; } // "public" or "private"
@@ -46,5 +50,7 @@ namespace Unit.Entities.Models
 
         [DynamoDBProperty("follow_requests")]
         public List<FollowRequest> FollowRequests { get; set; } = new List<FollowRequest>();
+
+
     }
 }

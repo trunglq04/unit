@@ -5,7 +5,10 @@ using NLog;
 using Unit.API.ActionFilter;
 using Unit.API.Configuration;
 using Unit.API.Extensions;
+using Unit.Repository.Contracts;
+using Unit.Service;
 using Unit.Service.Contracts;
+using Unit.Shared.DataTransferObjects;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +32,7 @@ builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer();
 builder.Services.ConfigureOptions<JwtBearerConfigurationOptions>();
+builder.Services.AddScoped<IDataShaper<UserDto>, DataShaper<UserDto>>();
 
 builder.Services.AddControllers();
 
