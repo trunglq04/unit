@@ -47,14 +47,14 @@ namespace Unit.Service
             if (!string.IsNullOrWhiteSpace(fieldsString))
             {
                 var fields = fieldsString.Split(',',
-                    StringSplitOptions.RemoveEmptyEntries);
+               StringSplitOptions.RemoveEmptyEntries);
 
                 // Check if the property name matches the input field then add to properties list
                 foreach (var field in fields)
                 {
                     var property = Properties
-                        .FirstOrDefault(pi => pi.Name.Equals(field.Trim(),      
-                        StringComparison.InvariantCultureIgnoreCase));
+                    .FirstOrDefault(pi => pi.Name.Equals(field.Trim(),
+                   StringComparison.InvariantCultureIgnoreCase));
 
                     if (property == null)
                         continue;
@@ -85,14 +85,15 @@ namespace Unit.Service
 
         private ExpandoObject FetchDataForEntity(T entity, IEnumerable<PropertyInfo> requiredProperties)
         {
-            var shapedObject = new ExpandoObject(); 
+            var shapedObject = new ExpandoObject();
+
 
             foreach (var property in requiredProperties)
             {
                 var objectPropertyValue = property.GetValue(entity);
 
                 if (objectPropertyValue != null)
-                    shapedObject.TryAdd(property.Name, objectPropertyValue);
+                shapedObject.TryAdd(property.Name, objectPropertyValue);
             }
 
             return shapedObject;

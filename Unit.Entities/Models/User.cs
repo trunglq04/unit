@@ -30,13 +30,13 @@ namespace Unit.Entities.Models
         public List<string> Following { get; set; } = new();
 
         [DynamoDBProperty("blocked_users")]
-        public List<string> BlockedUsers { get; set; } = new();
+        public List<string> BlockedUsers { get; set; } = new List<string>();
 
         [DynamoDBProperty("conversation_id")]
-        public List<string> ConversationId { get; set; } = new();
+        public List<string> ConversationId { get; set; } = new List<string>();
 
         [DynamoDBProperty("active")]
-        public bool Active { get; set; } = true; // e.g., "active", "inactive"
+        public bool Active { get; set; } // e.g., "active", "inactive"
 
         [DynamoDBProperty("private")]
         public bool Private { get; set; } = false; // "public" or "private"

@@ -25,6 +25,7 @@ namespace Unit.API.ModelBinders
             }
 
             var genericType = bindingContext.ModelType.GetTypeInfo().GenericTypeArguments[0];
+
             var converter = TypeDescriptor.GetConverter(genericType);
 
             var objectArray = providedValue.Split(new[] { "," },
@@ -38,6 +39,7 @@ namespace Unit.API.ModelBinders
             bindingContext.Model = idArray;
             bindingContext.Result = ModelBindingResult.Success(bindingContext.Model);
 
+            bindingContext.Result = ModelBindingResult.Success(bindingContext.Model);
             return Task.CompletedTask;
         }
     }

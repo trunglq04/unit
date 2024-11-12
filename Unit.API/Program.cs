@@ -42,6 +42,7 @@ builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer();
 builder.Services.ConfigureOptions<JwtBearerConfigurationOptions>();
+builder.Services.AddScoped<IDataShaper<UserDto>, DataShaper<UserDto>>();
 
 builder.Services.AddScoped<IDataShaper<UserDto>, DataShaper<UserDto>>();
 builder.Services.AddScoped<IDataShaper<CommentDto>, DataShaper<CommentDto>>();
