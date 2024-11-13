@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using System.Dynamic;
+using Unit.Entities.Models;
 using Unit.Repository.Contracts;
 using Unit.Service.Contracts;
 using Unit.Service.Helper;
@@ -26,13 +27,31 @@ namespace Unit.Service
             _userShaper = userShaper;
         }
 
-        public async Task<ExpandoObject> GetUserByIdAsync(UserParameters parameters, string id)
+        public async Task<ExpandoObject> GetUserByIdAsync(UserParameters parameters, string token, string? id = null)
         {
-            var users = await _repository.User.GetUserAsync(id!);
+            var userId = JwtHelper.GetPayloadData(token, "username");
 
-            var usersDto = _mapper.Map<UserDto>(users);
+            var users = !string.IsNullOrWhiteSpace(id) ? await _repository.User.GetUserAsync(id!) : await _repository.User.GetUserAsync(userId!);
 
-            var shapedData = _userShaper.ShapeData(usersDto, parameters.Fields);
+            var userDto = _mapper.Map<UserDto>(users);
+            userDto.NumberOfFollowing = userDto.Following.Count;
+            userDto.NumberOfFollwers = userDto.Followers.Count;
+            if (!string.IsNullOrWhiteSpace(id) && !id.Equals(userId))
+            {
+                if (userDto.Private == true && !userDto.Followers.Contains(userId))
+                {
+                    userDto.Followers = null;
+                    userDto.Following = null;
+                }
+                userDto.PhoneNumber = null;
+                userDto.BlockedUsers = null;
+                userDto.DateOfBirth = null;
+                userDto.FollowRequests = null;
+                userDto.LastModified = null;
+
+            }
+
+            var shapedData = _userShaper.ShapeData(userDto, parameters.Fields);
 
             return shapedData;
         }
@@ -40,28 +59,11 @@ namespace Unit.Service
 
         public async Task<(IEnumerable<ExpandoObject> users, MetaData metaData)> GetUsersAsync(UserParameters parameters, string token)
         {
-
             var userId = JwtHelper.GetPayloadData(token, "username");
 
             var usersWithMetaData = await _repository.User.GetUsersExceptAsync(parameters, userId!);
 
-            var usersDto = _mapper.Map<List<UserDto>>(usersWithMetaData).Where(u => u.Active == true).Select(u =>
-            {
-                u.NumberOfFollowing = u.Following.Count;
-                u.NumberOfFollwers = u.Followers.Count;
-                if (u.Private == true && !u.Followers.Contains(userId))
-                {
-                    u.Followers = [];
-                    u.Following = [];
-                    u.PhoneNumber = "";
-                }
-                u.BlockedUsers = [];
-                return u;
-            });
-
-            var shapedData = _userShaper.ShapeData(usersDto, parameters.Fields);
-
-            return (users: shapedData, metaData: usersWithMetaData.MetaData);
+            return await MappingUserEntityToDto(usersWithMetaData, userId!, parameters.Fields);
         }
 
         public async Task<(IEnumerable<ExpandoObject> users, MetaData metaData)> GetUsersByIdsAsync(UserParameters parameters, string[] ids)
@@ -84,6 +86,30 @@ namespace Unit.Service
             userEntity.LastModified = DateTime.UtcNow;
             await _repository.User.UpdateUserAsync(userEntity);
 
+        }
+
+        private async Task<(IEnumerable<ExpandoObject> users, MetaData metaData)> MappingUserEntityToDto(PagedList<User> users, string userId, string? fields)
+        {
+            var usersDto = _mapper.Map<List<UserDto>>(users).Select(u =>
+            {
+                u.NumberOfFollowing = u.Following.Count;
+                u.NumberOfFollwers = u.Followers.Count;
+                if (u.Private == true && !u.Followers.Contains(userId))
+                {
+                    u.Followers = null;
+                    u.Following = null;
+                }
+                u.PhoneNumber = null;
+                u.BlockedUsers = null;
+                u.DateOfBirth = null;
+                u.FollowRequests = null;
+                u.LastModified = null;
+
+                return u;
+            }).ToList();
+            var shapedData = _userShaper.ShapeData(usersDto, fields);
+
+            return (users: shapedData, metaData: users.MetaData);
         }
     }
 }
