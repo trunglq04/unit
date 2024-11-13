@@ -16,10 +16,43 @@ namespace Unit.Repository
         protected readonly IDynamoDBContext _dynamoDbContext;
         protected readonly IAmazonDynamoDB _dynamoDbClient;
 
+        private static readonly Dictionary<string, string?> PropertyCache = typeof(T)
+            .GetProperties()
+            .ToDictionary(
+                prop => prop.Name,
+                prop => prop.GetCustomAttributes(typeof(DynamoDBPropertyAttribute), false)
+                            .FirstOrDefault() is DynamoDBPropertyAttribute attribute ? attribute.AttributeName : null
+            );
+
         protected RepositoryBase(IDynamoDBContext dynamoDbContext, IAmazonDynamoDB dynamoDbClient)
         {
             _dynamoDbContext = dynamoDbContext;
             _dynamoDbClient = dynamoDbClient;
+        }
+
+
+        public string? FieldsBuilder(string? fields)
+        {
+            if (!string.IsNullOrWhiteSpace(fields))
+            {
+                var listFields = fields.Split(',');
+
+                var dynamoDbFields = listFields.Select(field =>
+                {
+                    return PropertyCache.ContainsKey(field) ? PropertyCache[field] : null;
+                })
+                .Where(attrName => attrName != null)
+                .ToList();
+
+                if (dynamoDbFields.Count == 0)
+                {
+                    return null;
+                }
+
+                return string.Join(", ", dynamoDbFields);
+            }
+
+            return null;
         }
 
         public string GetTableName()
@@ -28,22 +61,7 @@ namespace Unit.Repository
             return tableAttribute!.TableName;
         }
 
-        public string? FieldsBuilder(string? fields)
-        {
-            if (!string.IsNullOrWhiteSpace(fields))
-            {
-                var listFields = fields.Split(',');
-                var dynamoDbFields = listFields.Select(field =>
-                {
-                    var property = typeof(T).GetProperty(field);
-                    var attribute = property?.GetCustomAttributes(typeof(DynamoDBPropertyAttribute), false)
-                                              .FirstOrDefault() as DynamoDBPropertyAttribute;
-                    return attribute?.AttributeName ?? field;
-                }).ToList();
-                return string.Join(", ", dynamoDbFields);
-            }
-            return null;
-        }
+
 
         public async Task<List<T>> FindAllAsync()
             => await _dynamoDbContext.ScanAsync<T>(new List<ScanCondition>()).GetRemainingAsync();
