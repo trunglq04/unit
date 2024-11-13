@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using System.Dynamic;
 using Unit.Entities.Models;
 using Unit.Repository.Contracts;
