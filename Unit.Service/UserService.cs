@@ -48,6 +48,7 @@ namespace Unit.Service
                 userDto.DateOfBirth = null;
                 userDto.FollowRequests = null;
                 userDto.LastModified = null;
+
             }
 
             var shapedData = _userShaper.ShapeData(userDto, parameters.Fields);
@@ -103,6 +104,7 @@ namespace Unit.Service
                 u.DateOfBirth = null;
                 u.FollowRequests = null;
                 u.LastModified = null;
+
                 return u;
             }).ToList();
             var shapedData = _userShaper.ShapeData(usersDto, fields);
