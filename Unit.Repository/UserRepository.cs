@@ -13,9 +13,9 @@ namespace Unit.Repository
 {
     public class UserRepository : RepositoryBase<User>, IUserRepository
     {
-        public UserRepository(IDynamoDBContext dynamoDbContext, IAmazonDynamoDB dynamoDbClient) : base(dynamoDbContext, dynamoDbClient) {}
+        public UserRepository(IDynamoDBContext dynamoDbContext, IAmazonDynamoDB dynamoDbClient) : base(dynamoDbContext, dynamoDbClient) { }
 
-        public async Task CreateUserAsync(User user) 
+        public async Task CreateUserAsync(User user)
             => await CreateAsync(user);
 
         public async Task<User> GetUserAsync(string userId)
@@ -26,14 +26,13 @@ namespace Unit.Repository
         }
 
 
-        public async Task<PagedList<User>> GetUsersByIdsAsync(UserParameters userParameters, string[] ids)
+        public async Task<PagedList<User>> GetUsersByIdsAsync(UserParameters userParameters, List<string> ids)
         {
-
             var filterExpression = new StringBuilder();
             var expressionAttributeValues = new Dictionary<string, AttributeValue>();
 
             expressionAttributeValues[":isActive"] = new AttributeValue { N = "1" };
-            for (int i = 0; i < ids.Length; i++)
+            for (int i = 0; i < ids.Count(); i++)
             {
                 var parameterName = $":UserId{i}";
                 if (i > 0)
@@ -58,7 +57,7 @@ namespace Unit.Repository
         {
             var filterExpression = new StringBuilder();
 
-            if (!string.IsNullOrWhiteSpace(userParameters.SearchTerm))
+            if (!string.IsNullOrWhiteSpace(userParameters.UserName))
             {
                 filterExpression.Append("contains(user_name, :searchTerm)");
             }
@@ -72,9 +71,9 @@ namespace Unit.Repository
 
             var expressionAttributeValues = new Dictionary<string, AttributeValue>();
 
-            if (!string.IsNullOrWhiteSpace(userParameters.SearchTerm))
+            if (!string.IsNullOrWhiteSpace(userParameters.UserName))
             {
-                expressionAttributeValues[":searchTerm"] = new AttributeValue { S = userParameters.SearchTerm };
+                expressionAttributeValues[":searchTerm"] = new AttributeValue { S = userParameters.UserName };
             }
 
             expressionAttributeValues[":excludedUserId"] = new AttributeValue { S = userId };

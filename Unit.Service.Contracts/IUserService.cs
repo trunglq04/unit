@@ -10,9 +10,11 @@ namespace Unit.Service.Contracts
 
         Task<ExpandoObject> GetUserByIdAsync(UserParameters parameters, string token, string? id = null);
 
-        Task<(IEnumerable<ExpandoObject> users, MetaData metaData)> GetUsersByIdsAsync(UserParameters parameters, string[] ids);
+        Task<(IEnumerable<ExpandoObject> users, MetaData metaData)> GetUsersByIdsAsync(UserParameters parameters, string token, List<string> ids);
 
-        Task UpdateUser(UserInfoDtoForUpdate userDtoForUpdate, string id);
+        Task UpdateUser(UserInfoDtoForUpdate userDtoForUpdate, string id, string? imagePath = null);
+
+        Task<string> UploadUserImageAsync(string userId, FileInfo imageFile);
 
     }
 }

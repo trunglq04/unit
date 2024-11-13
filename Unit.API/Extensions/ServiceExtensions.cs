@@ -13,6 +13,7 @@ using Unit.Repository.Contracts;
 using Unit.Repository;
 using Unit.Service;
 using Unit.Service.Contracts;
+using Amazon.S3;
 
 namespace Unit.API.Extensions
 {
@@ -57,6 +58,7 @@ namespace Unit.API.Extensions
             services.AddDefaultAWSOptions(awsOptions);
             services.AddAWSService<IAmazonDynamoDB>();
             services.AddAWSService<IAmazonCognitoIdentityProvider>();
+            services.AddAWSService<IAmazonS3>();
             services.AddScoped<IDynamoDBContext, DynamoDBContext>();
         }
 

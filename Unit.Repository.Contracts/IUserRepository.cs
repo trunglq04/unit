@@ -9,7 +9,7 @@ namespace Unit.Repository.Contracts
 
         Task<User> GetUserAsync(string userId);
 
-        Task<PagedList<User>> GetUsersByIdsAsync(UserParameters userParameters, string[] ids);
+        Task<PagedList<User>> GetUsersByIdsAsync(UserParameters userParameters, List<string> ids);
 
         Task CreateUserAsync(User user);
 
