@@ -34,6 +34,7 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 
 builder.Services.AddScoped<ValidationFilterAttribute>();
 builder.Services.AddScoped<ValidationFilterPasswordConfirmation>();
+builder.Services.AddScoped<ImageFileValidationFilter>();
 
 builder.Services.AddAuthorization();
 builder.Services
@@ -42,6 +43,7 @@ builder.Services
 builder.Services.ConfigureOptions<JwtBearerConfigurationOptions>();
 
 builder.Services.AddScoped<IDataShaper<UserDto>, DataShaper<UserDto>>();
+builder.Services.AddScoped<IDataShaper<PostDto>, DataShaper<PostDto>>();
 
 builder.Services.AddControllers();
 

@@ -1,5 +1,10 @@
+using Amazon.S3;
+using Amazon.S3.Model;
+using Amazon.Util;
 using AutoMapper;
+using Microsoft.Extensions.Options;
 using System.Dynamic;
+using Unit.Entities.ConfigurationModels;
 using Unit.Entities.Models;
 using Unit.Repository.Contracts;
 using Unit.Service.Contracts;
@@ -19,12 +24,19 @@ namespace Unit.Service
 
         private readonly IDataShaper<UserDto> _userShaper;
 
-        public UserService(IRepositoryManager repository, ILoggerManager logger, IMapper mapper, IDataShaper<UserDto> userShaper)
+        private readonly IAmazonS3 _s3Client;
+
+        private readonly S3Configuration _s3Config;
+
+        public UserService(IRepositoryManager repository, ILoggerManager logger, IMapper mapper, IDataShaper<UserDto> userShaper, IAmazonS3 s3Client,
+            IOptions<AWSConfiguration> configuration)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
             _userShaper = userShaper;
+            _s3Client = s3Client;
+            _s3Config = configuration.Value.S3Bucket!;
         }
 
         public async Task<ExpandoObject> GetUserByIdAsync(UserParameters parameters, string token, string? id = null)
@@ -56,23 +68,21 @@ namespace Unit.Service
             return await MappingUserEntityToDto(usersWithMetaData, userId!, parameters.Fields);
         }
 
-        public async Task<(IEnumerable<ExpandoObject> users, MetaData metaData)> GetUsersByIdsAsync(UserParameters parameters, string[] ids)
+        public async Task<(IEnumerable<ExpandoObject> users, MetaData metaData)> GetUsersByIdsAsync(UserParameters parameters, string token, List<string> ids)
         {
+            var userId = JwtHelper.GetPayloadData(token, "username");
+
             var usersWithMetaData = await _repository.User.GetUsersByIdsAsync(parameters, ids);
 
-            var usersDto = _mapper.Map<List<UserDto>>(usersWithMetaData);
-
-            var shapedData = _userShaper.ShapeData(usersDto, parameters.Fields);
-
-            return (users: shapedData, metaData: usersWithMetaData.MetaData);
+            return await MappingUserEntityToDto(usersWithMetaData, userId!, parameters.Fields);
         }
 
-        public async Task UpdateUser(UserInfoDtoForUpdate userDtoForUpdate, string id)
+        public async Task UpdateUser(UserInfoDtoForUpdate userDtoForUpdate, string id, string? imagePath = null)
         {
             var userEntity = await _repository.User.GetUserAsync(id);
 
             _mapper.Map(userDtoForUpdate, userEntity);
-
+            if (!string.IsNullOrWhiteSpace(imagePath)) userEntity.ProfilePicture = imagePath;
             userEntity.LastModified = DateTime.UtcNow;
             await _repository.User.UpdateUserAsync(userEntity);
 
@@ -105,6 +115,25 @@ namespace Unit.Service
             userDto.FollowRequests = null;
             userDto.LastModified = null;
             userDto.ConversationId = null;
+        }
+
+        public async Task<string> UploadUserImageAsync(string userId, FileInfo imageFile)
+        {
+            string fileName = $"users/{userId}/profile-picture.jpg";
+
+            using (var fileStream = new FileStream(imageFile.FullName, FileMode.Open, FileAccess.Read))
+            {
+                var uploadRequest = new PutObjectRequest
+                {
+                    InputStream = fileStream,
+                    BucketName = _s3Config.BucketName,
+                    Key = fileName,
+                    ContentType = "image/png"
+                };
+                uploadRequest.Headers.ContentDisposition = "inline";
+                await _s3Client.PutObjectAsync(uploadRequest);
+            }
+            return _s3Config.S3BucketPath + fileName;
         }
     }
 }

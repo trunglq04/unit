@@ -16,11 +16,11 @@ namespace Unit.API.ActionFilter
             var action = context.RouteData.Values["action"];
             var controller = context.RouteData.Values["controller"];
 
-            var paramAction = context.ActionDescriptor.Parameters.SingleOrDefault(p => p.ParameterType.ToString().Contains("DtoRequest"));
+            var paramAction = context.ActionDescriptor.Parameters.SingleOrDefault(p => p.ParameterType.ToString().Contains("Dto"));
             if (paramAction is not null)
             {
                 var param = context.ActionArguments
-                .SingleOrDefault(x => x.Value.ToString().Contains("DtoRequest"))
+                .SingleOrDefault(x => x.Value.ToString().Contains("Dto"))
                 .Value;
                 if (param is null)
                 {
