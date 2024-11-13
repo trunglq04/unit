@@ -13,11 +13,9 @@ namespace Unit.Repository
 {
     public class UserRepository : RepositoryBase<User>, IUserRepository
     {
-        public UserRepository(IDynamoDBContext dynamoDbContext, IAmazonDynamoDB dynamoDbClient) : base(dynamoDbContext, dynamoDbClient)
-        {
-        }
+        public UserRepository(IDynamoDBContext dynamoDbContext, IAmazonDynamoDB dynamoDbClient) : base(dynamoDbContext, dynamoDbClient) {}
 
-        public async Task CreateUserAsync(User user)
+        public async Task CreateUserAsync(User user) 
             => await CreateAsync(user);
 
         public async Task<User> GetUserAsync(string userId)

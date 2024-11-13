@@ -28,7 +28,6 @@ namespace Unit.Service
 
         public async Task<ExpandoObject> GetUserByIdAsync(UserParameters parameters, string id)
         {
-
             var users = await _repository.User.GetUserAsync(id!);
 
             var usersDto = _mapper.Map<UserDto>(users);
