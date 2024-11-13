@@ -9,13 +9,13 @@ namespace Unit.Entities.Models
         public string PostId { get; set; }
 
         [DynamoDBRangeKey("comment_id")]
-        public string CommentId { get; set; } = Guid.NewGuid().ToString();
+        public required string CommentId { get; set; } = Guid.NewGuid().ToString();
 
         [DynamoDBProperty("user_id")]
-        public string UserId { get; set; }
+        public required string UserId { get; set; }
 
         [DynamoDBProperty("content")]
-        public string Content { get; set; }
+        public required string Content { get; set; }
 
         [DynamoDBProperty("create_at")]
         public DateTime CreatedAt { get; set; }
@@ -27,6 +27,6 @@ namespace Unit.Entities.Models
         public string? ParentCommentId { get; set; } // null if this is a top-level comment
 
         [DynamoDBProperty("reactions")]
-        public List<Interaction> Reactions { get; set; } = new List<Interaction>();
+        public List<Interaction> Reactions { get; set; } = new();
     }
 }

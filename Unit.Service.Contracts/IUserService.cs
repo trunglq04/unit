@@ -14,6 +14,5 @@ namespace Unit.Service.Contracts
 
         Task UpdateUser(UserInfoDtoForUpdate userDtoForUpdate, string id);
 
-
     }
 }

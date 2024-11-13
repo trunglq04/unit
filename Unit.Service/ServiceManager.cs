@@ -16,7 +16,7 @@ namespace Unit.Service
         public ServiceManager(IRepositoryManager repositoryManager, ILoggerManager logger, IAmazonCognitoIdentityProvider cognitoProvider, IOptions<AWSConfiguration> configuration, IMapper mapper, IDataShaper<UserDto> userShaper)
         {
             _userService = new Lazy<IUserService>(() => new UserService(repositoryManager, logger, mapper, userShaper));
-            _authenticationService = new Lazy<IAuthenticationService>(() => new AuthenticationService(repositoryManager, logger, cognitoProvider, configuration, mapper));
+            _authenticationService = new Lazy<IAuthenticationService>(() => new AuthenticationService(repositoryManager, logger, mapper, cognitoProvider, configuration));
         }
 
         public IUserService UserService => _userService.Value;
