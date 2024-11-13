@@ -12,7 +12,7 @@ namespace Unit.Entities.Models
         public required string UserName { get; set; }
 
         [DynamoDBProperty("phone_number")]
-        public string PhoneNumber { get; set; }
+        public string? PhoneNumber { get; set; }
 
         [DynamoDBProperty("date_of_birth")]
         public DateTime DateOfBirth { get; set; }

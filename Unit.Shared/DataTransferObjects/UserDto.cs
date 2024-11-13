@@ -25,6 +25,8 @@ namespace Unit.Shared.DataTransferObjects
 
         public List<string>? BlockedUsers { get; set; }
 
+        public List<string>? ConversationId { get; set; }
+
         public bool? Active { get; set; } // e.g., "active", "inactive"
 
         public bool? Private { get; set; } // "public" or "private"
