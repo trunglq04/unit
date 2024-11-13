@@ -11,10 +11,11 @@ namespace Unit.Repository
 {
     public class PostRepository : RepositoryBase<Post>, IPostRepository
     {
+
         public PostRepository(IDynamoDBContext dynamoDbContext, IAmazonDynamoDB dynamoDbClient) : base(dynamoDbContext, dynamoDbClient) { }
 
         public async Task CreatePostAsync(Post post)
-            => await CreateAsync(post);
+        => await CreateAsync(post);
 
         public Task<Post> GetPostByPostId(PostParameters request, string userId)
         {
@@ -117,6 +118,6 @@ namespace Unit.Repository
         }
 
         public async Task UpdateUserAsync(Post post)
-            => await UpdateUserAsync(post);
+         => await UpdateUserAsync(post);
     }
 }
