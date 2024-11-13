@@ -9,5 +9,6 @@ namespace Unit.Entities.ConfigurationModels
         public string? SecretKey { get; set; }
 
         public CognitoConfiguration? Cognito { get; set; }
+        public S3Configuration? S3Bucket { get; set; }
     }
 }

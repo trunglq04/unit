@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Unit.Service.Contracts
+﻿namespace Unit.Service.Contracts
 {
     public interface IServiceManager
     {
         IUserService UserService { get; }
+
+        IPostService PostService { get; }
 
         IAuthenticationService AuthenticationService { get; }
 
