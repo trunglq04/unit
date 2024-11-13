@@ -40,11 +40,15 @@ namespace Unit.Service
             {
                 if (userDto.Private == true && !userDto.Followers.Contains(userId))
                 {
-                    userDto.Followers = [];
-                    userDto.Following = [];
+                    userDto.Followers = null;
+                    userDto.Following = null;
                 }
-                userDto.PhoneNumber = "";
-                userDto.BlockedUsers = [];
+                userDto.PhoneNumber = null;
+                userDto.BlockedUsers = null;
+                userDto.DateOfBirth = null;
+                userDto.FollowRequests = null;
+                userDto.LastModified = null;
+
             }
 
             var shapedData = _userShaper.ShapeData(userDto, parameters.Fields);
@@ -92,11 +96,15 @@ namespace Unit.Service
                 u.NumberOfFollwers = u.Followers.Count;
                 if (u.Private == true && !u.Followers.Contains(userId))
                 {
-                    u.Followers = [];
-                    u.Following = [];
-                    u.PhoneNumber = "";
+                    u.Followers = null;
+                    u.Following = null;
                 }
-                u.BlockedUsers = [];
+                u.PhoneNumber = null;
+                u.BlockedUsers = null;
+                u.DateOfBirth = null;
+                u.FollowRequests = null;
+                u.LastModified = null;
+
                 return u;
             }).ToList();
             var shapedData = _userShaper.ShapeData(usersDto, fields);
