@@ -71,6 +71,7 @@ namespace Unit.Repository
             }
             filterExpression.Append("user_id <> :excludedUserId AND active = :isActive");
 
+
             var expressionAttributeValues = new Dictionary<string, AttributeValue>();
 
             if (!string.IsNullOrWhiteSpace(userParameters.SearchTerm))
@@ -80,6 +81,7 @@ namespace Unit.Repository
 
             expressionAttributeValues[":excludedUserId"] = new AttributeValue { S = userId };
             expressionAttributeValues[":isActive"] = new AttributeValue { N = "1" };
+
 
             var users = await FindByConditionAsync(
                 userParameters,
