@@ -61,11 +61,13 @@ namespace Unit.Repository
             return null;
         }
 
-        private string GetTableName()
+        public string GetTableName()
         {
             var tableAttribute = typeof(T).GetCustomAttribute<DynamoDBTableAttribute>();
             return tableAttribute!.TableName;
         }
+
+
 
         public async Task<List<T>> FindAllAsync()
             => await _dynamoDbContext.ScanAsync<T>(new List<ScanCondition>()).GetRemainingAsync();
