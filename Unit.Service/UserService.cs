@@ -38,17 +38,7 @@ namespace Unit.Service
             userDto.NumberOfFollwers = userDto.Followers.Count;
             if (!string.IsNullOrWhiteSpace(id) && !id.Equals(userId))
             {
-                if (userDto.Private == true && !userDto.Followers.Contains(userId))
-                {
-                    userDto.Followers = null;
-                    userDto.Following = null;
-                }
-                userDto.PhoneNumber = null;
-                userDto.BlockedUsers = null;
-                userDto.DateOfBirth = null;
-                userDto.FollowRequests = null;
-                userDto.LastModified = null;
-
+                ConfigUserDto(ref userDto, userId);
             }
 
             var shapedData = _userShaper.ShapeData(userDto, parameters.Fields);
@@ -94,22 +84,27 @@ namespace Unit.Service
             {
                 u.NumberOfFollowing = u.Following.Count;
                 u.NumberOfFollwers = u.Followers.Count;
-                if (u.Private == true && !u.Followers.Contains(userId))
-                {
-                    u.Followers = null;
-                    u.Following = null;
-                }
-                u.PhoneNumber = null;
-                u.BlockedUsers = null;
-                u.DateOfBirth = null;
-                u.FollowRequests = null;
-                u.LastModified = null;
-
+                ConfigUserDto(ref u, userId);
                 return u;
             }).ToList();
             var shapedData = _userShaper.ShapeData(usersDto, fields);
 
             return (users: shapedData, metaData: users.MetaData);
+        }
+
+        private void ConfigUserDto(ref UserDto userDto, string userId)
+        {
+            if (userDto.Private == true && !userDto.Followers.Contains(userId))
+            {
+                userDto.Followers = null;
+                userDto.Following = null;
+            }
+            userDto.PhoneNumber = null;
+            userDto.BlockedUsers = null;
+            userDto.DateOfBirth = null;
+            userDto.FollowRequests = null;
+            userDto.LastModified = null;
+            userDto.ConversationId = null;
         }
     }
 }
