@@ -65,7 +65,8 @@ namespace Unit.Service
             foreach (var property in requiredProperties)
             {
                 var objectPropertyValue = property.GetValue(entity);
-                shapedObject.TryAdd(property.Name, objectPropertyValue);
+                if (objectPropertyValue != null)
+                    shapedObject.TryAdd(property.Name, objectPropertyValue);
             }
             return shapedObject;
         }
