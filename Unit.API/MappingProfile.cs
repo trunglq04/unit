@@ -11,10 +11,15 @@ namespace Unit.API
     {
         public MappingProfile()
         {
+            //user
             CreateMap<AuthenticationResultType, TokenDtoResponse>();
             CreateMap<User, UserDto>();
             CreateMap<UserInfoDtoForUpdate, User>()
             .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+
+            //post
+            CreateMap<Post, PostDto>();
+            CreateMap<PostDtoForCreation, Post>();
         }
     }
 }

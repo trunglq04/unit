@@ -1,4 +1,5 @@
 ﻿using Amazon.DynamoDBv2.DataModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace Unit.Entities.Models
 {
@@ -12,6 +13,7 @@ namespace Unit.Entities.Models
         public required string PostId { get; set; } = Guid.NewGuid().ToString();
 
         [DynamoDBProperty("content")]
+        [MaxLength(500)]
         public string Content { get; set; }
 
         [DynamoDBProperty("media")]
