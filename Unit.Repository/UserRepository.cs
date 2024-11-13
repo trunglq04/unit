@@ -32,6 +32,7 @@ namespace Unit.Repository
             var filterExpression = new StringBuilder();
             var expressionAttributeValues = new Dictionary<string, AttributeValue>();
 
+            expressionAttributeValues[":isActive"] = new AttributeValue { N = "1" };
             for (int i = 0; i < ids.Length; i++)
             {
                 var parameterName = $":UserId{i}";
@@ -39,7 +40,7 @@ namespace Unit.Repository
                 {
                     filterExpression.Append(" OR ");
                 }
-                filterExpression.Append($"user_id = {parameterName}");
+                filterExpression.Append($"user_id = {parameterName} AND active = :isActive");
                 expressionAttributeValues[parameterName] = new AttributeValue { S = ids[i] };
             }
 
@@ -66,7 +67,8 @@ namespace Unit.Repository
             {
                 filterExpression.Append(" AND ");
             }
-            filterExpression.Append("user_id <> :excludedUserId");
+            filterExpression.Append("user_id <> :excludedUserId AND active = :isActive");
+
 
             var expressionAttributeValues = new Dictionary<string, AttributeValue>();
 
@@ -76,6 +78,8 @@ namespace Unit.Repository
             }
 
             expressionAttributeValues[":excludedUserId"] = new AttributeValue { S = userId };
+            expressionAttributeValues[":isActive"] = new AttributeValue { N = "1" };
+
 
             var users = await FindByConditionAsync(
                 userParameters,

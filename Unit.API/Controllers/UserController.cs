@@ -43,13 +43,11 @@ namespace Unit.API.Controllers
             return Ok(pagedResult.users);
         }
 
-        [HttpGet("myProfile")]
+        [HttpGet("p/{id?}")]
         [Authorize]
-        public async Task<IActionResult> GetUser([FromHeader(Name = "Authorization")] string token, [FromQuery] UserParameters userParameters)
+        public async Task<IActionResult> GetUserById([FromHeader(Name = "Authorization")] string token, [FromQuery] UserParameters userParameters, string id)
         {
-            var userId = JwtHelper.GetPayloadData(token, "username");
-
-            var user = await _service.UserService.GetUserByIdAsync(userParameters, userId!);
+            var user = await _service.UserService.GetUserByIdAsync(userParameters, token, id);
 
             return Ok(user);
         }

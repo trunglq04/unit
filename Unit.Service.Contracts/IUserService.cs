@@ -8,7 +8,7 @@ namespace Unit.Service.Contracts
     {
         Task<(IEnumerable<ExpandoObject> users, MetaData metaData)> GetUsersAsync(UserParameters parameters, string token);
 
-        Task<ExpandoObject> GetUserByIdAsync(UserParameters parameters, string id);
+        Task<ExpandoObject> GetUserByIdAsync(UserParameters parameters, string token, string? id = null);
 
         Task<(IEnumerable<ExpandoObject> users, MetaData metaData)> GetUsersByIdsAsync(UserParameters parameters, string[] ids);
 
