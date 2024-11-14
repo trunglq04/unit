@@ -6,6 +6,10 @@ namespace Unit.Shared.DataTransferObjects
     {
         public required string UserId { get; set; }
 
+        public required string UserName { get; set; }
+
+        public string? ProfilePicture { get; set; }
+
         public required string PostId { get; set; }
 
         public string Content { get; set; }
