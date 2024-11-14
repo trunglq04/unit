@@ -60,7 +60,6 @@ namespace Unit.API.Controllers
         [Authorize]
         public async Task<IActionResult> GetPosts([FromHeader(Name = "Authorization")] string token, [FromQuery] PostParameters postParameters)
         {
-
             var postWithMetaData = await _service.PostService.GetPosts(postParameters, token);
 
             Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(postWithMetaData.metaData));
