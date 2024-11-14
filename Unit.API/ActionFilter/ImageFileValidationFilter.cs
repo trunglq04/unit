@@ -23,6 +23,7 @@ namespace Unit.API.ActionFilter
                                                                 "image/tiff",
                                                                 "image/svg+xml"
                                                             };
+
         }
 
         public void OnActionExecuting(ActionExecutingContext context)

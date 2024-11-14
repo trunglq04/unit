@@ -1,4 +1,4 @@
-﻿using System.Dynamic;
+using System.Dynamic;
 using Unit.Entities.Models;
 using Unit.Shared.DataTransferObjects;
 using Unit.Shared.RequestFeatures;
