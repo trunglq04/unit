@@ -12,6 +12,12 @@ namespace Unit.Entities.Models
         [DynamoDBRangeKey("post_id")]
         public required string PostId { get; set; } = Guid.NewGuid().ToString();
 
+        [DynamoDBProperty("user_name")]
+        public required string UserName { get; set; }
+
+        [DynamoDBProperty("profile_picture")]
+        public string? ProfilePicture { get; set; }
+
         [DynamoDBProperty("content")]
         [MaxLength(500)]
         public string Content { get; set; }

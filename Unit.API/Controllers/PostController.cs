@@ -54,14 +54,14 @@ namespace Unit.API.Controllers
 
             return Ok();
         }
-
+        //userId o day la id cua nguoi gui request
+        //userId trong PostParameters la userId cua query
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> GetPosts([FromHeader(Name = "Authorization")] string token, [FromQuery] PostParameters postParameters)
         {
-            var userId = JwtHelper.GetPayloadData(token, "username");
 
-            var postWithMetaData = await _service.PostService.GetPosts(postParameters, userId!);
+            var postWithMetaData = await _service.PostService.GetPosts(postParameters, token);
 
             Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(postWithMetaData.metaData));
 

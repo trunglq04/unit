@@ -12,9 +12,8 @@ namespace Unit.Repository.Contracts
 
         Task<PagedList<Post>> GetPosts(PostParameters request, List<string>? userFollowing = null);
 
-        Task<PagedList<Post>> GetPostsByUserId(PostParameters request, string userId, string? postId = null);
+        Task<PagedList<Post>> GetPostsByUserId(PostParameters request);
 
-        Task<Post> GetPostByPostId(PostParameters request, string userId);
 
     }
 }
