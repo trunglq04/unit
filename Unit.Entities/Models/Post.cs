@@ -28,6 +28,9 @@ namespace Unit.Entities.Models
         [DynamoDBProperty("is_hidden")]
         public bool IsHidden { get; set; } = false;
 
+        [DynamoDBProperty("is_private")]
+        public bool IsPrivate { get; set; } = false;
+
         [DynamoDBProperty("like_count")]
         public int LikeCount { get; set; }
 

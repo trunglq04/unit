@@ -11,5 +11,6 @@
         public const string MaximumFileUpload = "Users can only upload a maximum number of files is";
         public const string MaximumVideoDuration = "Video length must not exceed 5 minutes.";
         public const string WrongPostFormatImage = "Only photo (JPEG, PNG, GIF) and video (MP4, MPEG) uploads are allowed.";
+        public const string UserHasBeenDisable = "User have been deactivated.";
     }
 }

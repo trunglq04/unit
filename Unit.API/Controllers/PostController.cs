@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq.Dynamic.Core;
+using System.Text.Json;
 using Unit.API.ActionFilter;
 using Unit.Service.Contracts;
 using Unit.Service.Helper;
 using Unit.Shared.DataTransferObjects;
+using Unit.Shared.RequestFeatures;
 
 namespace Unit.API.Controllers
 {
@@ -22,7 +25,7 @@ namespace Unit.API.Controllers
         [HttpPost]
         [Authorize]
         [ServiceFilter(typeof(FileValidationFilter))]
-        public async Task<IActionResult> UpdateUser(
+        public async Task<IActionResult> CreatePost(
         [FromHeader(Name = "Authorization")] string token,
         [FromForm] PostDtoForCreation post,
         [FromForm] List<IFormFile>? media)
@@ -34,13 +37,12 @@ namespace Unit.API.Controllers
             {
                 foreach (var imageFile in media)
                 {
-                    // Lấy phần mở rộng tệp từ IFormFile
                     var fileExtension = Path.GetExtension(imageFile.FileName);
 
                     using (var memoryStream = new MemoryStream())
                     {
                         await imageFile.CopyToAsync(memoryStream);
-                        memoryStream.Position = 0; // Đặt lại vị trí của stream về đầu
+                        memoryStream.Position = 0;
 
                         var path = await _service.PostService.UploadMediaPostAsync(userId!, memoryStream, fileExtension);
                         mediaPath.Add(path);
@@ -51,6 +53,20 @@ namespace Unit.API.Controllers
             await _service.PostService.CreatePost(post, userId!, mediaPath);
 
             return Ok();
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetPosts([FromHeader(Name = "Authorization")] string token, [FromQuery] PostParameters postParameters)
+        {
+            var userId = JwtHelper.GetPayloadData(token, "username");
+
+            var postWithMetaData = await _service.PostService.GetPosts(postParameters, userId!);
+
+            Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(postWithMetaData.metaData));
+
+            return Ok(postWithMetaData.posts);
+
         }
 
     }

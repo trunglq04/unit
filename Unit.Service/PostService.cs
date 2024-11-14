@@ -4,10 +4,13 @@ using AutoMapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Unit.Entities.ConfigurationModels;
+using Unit.Entities.Exceptions;
+using Unit.Entities.Exceptions.Messages;
 using Unit.Entities.Models;
 using Unit.Repository.Contracts;
 using Unit.Service.Contracts;
 using Unit.Shared.DataTransferObjects;
+using Unit.Shared.RequestFeatures;
 
 namespace Unit.Service
 {
@@ -37,12 +40,30 @@ namespace Unit.Service
 
         public async Task CreatePost(PostDtoForCreation post, string userId, List<string>? mediaPath = null)
         {
+            var user = await _repository.User.GetUserAsync(userId);
+            if (!user.Active) throw new BadRequestException(UserExMsg.UserHasBeenDisable);
+
             var postEntity = _mapper.Map<Post>(post);
+
             postEntity.CreatedAt = DateTime.UtcNow;
             postEntity.LastModified = DateTime.UtcNow;
             postEntity.UserId = userId;
+            postEntity.IsPrivate = user.Private;
+
             if (mediaPath != null && mediaPath.Any()) postEntity.Media.AddRange(mediaPath);
+
             await _repository.Post.CreatePostAsync(postEntity);
+        }
+
+        public async Task<(IEnumerable<PostDto> posts, MetaData metaData)> GetPosts(PostParameters request, string userId)
+        {
+            var user = string.IsNullOrWhiteSpace(request.UserId) ? await _repository.User.GetUserAsync(userId) : await _repository.User.GetUserAsync(request.UserId);
+
+            var postsEntity = await _repository.Post.GetPosts(request, user.Following);
+
+            var postsDto = _mapper.Map<List<PostDto>>(postsEntity);
+
+            return (posts: postsDto, metaData: postsEntity.MetaData);
         }
 
         public async Task<string> UploadMediaPostAsync(string userId, Stream fileStream, string fileExtension)
@@ -64,6 +85,7 @@ namespace Unit.Service
 
             return _s3Config.S3BucketPath + fileName;
         }
+
 
         private string GetContentType(string fileExtension)
         {

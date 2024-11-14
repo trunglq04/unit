@@ -2,8 +2,8 @@
 {
     public class MetaData
     {
-        public string? NexPageKey { get; set; }
+        public string? NextPageKey { get; set; }
         public int PageSize { get; set; }
-        public bool HasNext => NexPageKey != null;
+        public bool HasNext => NextPageKey != null;
     }
 }

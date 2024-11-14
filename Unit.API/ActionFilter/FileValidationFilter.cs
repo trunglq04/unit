@@ -19,7 +19,7 @@ namespace Unit.API.ActionFilter
                                                         "image/tiff",
                                                         "image/svg+xml"
                                                     };
-        private readonly string[] permittedVideoTypes = { "video/mp4", "video/mpeg" };
+        private readonly string[] permittedVideoTypes = { "video/mp4", "video/quicktime", "video/x-msvideo", "video/x-ms-wmv", "video/x-matroska" };
         private const int MaxVideoDurationInSeconds = 5 * 60; // 5 phút
 
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
