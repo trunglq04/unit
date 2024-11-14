@@ -1,11 +1,17 @@
-﻿using Amazon.S3;
+using Amazon.S3;
+using Amazon.S3.Model;
 using AutoMapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Unit.Entities.ConfigurationModels;
+using Unit.Entities.Exceptions;
+using Unit.Entities.Exceptions.Messages;
+using Unit.Entities.Models;
 using Unit.Repository.Contracts;
 using Unit.Service.Contracts;
 using Unit.Shared.DataTransferObjects;
+using Unit.Shared.RequestFeatures;
+
 
 namespace Unit.Service
 {
@@ -31,6 +37,79 @@ namespace Unit.Service
             _postShaper = postShaper;
             _s3Client = s3Client;
             _s3Config = configuration.Value.S3Bucket!;
+        }
+
+        public async Task CreatePost(PostDtoForCreation post, string userId, List<string>? mediaPath = null)
+        {
+            var user = await _repository.User.GetUserAsync(userId);
+            if (!user.Active) throw new BadRequestException(UserExMsg.UserHasBeenDisable);
+
+            var postEntity = _mapper.Map<Post>(post);
+
+            postEntity.CreatedAt = DateTime.UtcNow;
+            postEntity.LastModified = DateTime.UtcNow;
+            postEntity.UserId = userId;
+            postEntity.IsPrivate = user.Private;
+
+            if (mediaPath != null && mediaPath.Any()) postEntity.Media.AddRange(mediaPath);
+
+            await _repository.Post.CreatePostAsync(postEntity);
+        }
+
+        public async Task<(IEnumerable<PostDto> posts, MetaData metaData)> GetPosts(PostParameters request, string userId)
+        {
+            var user = string.IsNullOrWhiteSpace(request.UserId) ? await _repository.User.GetUserAsync(userId) : await _repository.User.GetUserAsync(request.UserId);
+
+            var postsEntity = await _repository.Post.GetPosts(request, user.Following);
+
+            var postsDto = _mapper.Map<List<PostDto>>(postsEntity);
+
+            return (posts: postsDto, metaData: postsEntity.MetaData);
+        }
+
+        public async Task<string> UploadMediaPostAsync(string userId, Stream fileStream, string fileExtension)
+        {
+            Guid myuuid = Guid.NewGuid();
+            string myuuidAsString = myuuid.ToString();
+            string fileName = $"posts/{userId}/{myuuidAsString}{fileExtension}";
+
+            var uploadRequest = new PutObjectRequest
+            {
+                InputStream = fileStream,
+                BucketName = _s3Config.BucketName,
+                Key = fileName,
+                ContentType = GetContentType(fileExtension),
+            };
+
+            uploadRequest.Headers.ContentDisposition = "inline";
+            await _s3Client.PutObjectAsync(uploadRequest);
+
+            return _s3Config.S3BucketPath + fileName;
+        }
+
+
+        private string GetContentType(string fileExtension)
+        {
+            return fileExtension.ToLower() switch
+            {
+                // Video content types
+                ".mp4" => "video/mp4",
+                ".mov" => "video/quicktime",
+                ".avi" => "video/x-msvideo",
+                ".wmv" => "video/x-ms-wmv",
+                ".mkv" => "video/x-matroska",
+
+                // Image content types
+                ".jpg" or ".jpeg" => "image/jpeg",
+                ".png" => "image/png",
+                ".gif" => "image/gif",
+                ".bmp" => "image/bmp",
+                ".webp" => "image/webp",
+                ".tiff" => "image/tiff",
+                ".svg" => "image/svg+xml",
+
+                _ => "application/octet-stream",
+            };
         }
     }
 }
