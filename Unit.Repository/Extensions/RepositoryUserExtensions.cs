@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-using System.Text;
-using Unit.Entities.Models;
+﻿using Unit.Entities.Models;
 using System.Linq.Dynamic.Core;
 using Unit.Repository.Extensions.Utility;
 
@@ -8,7 +6,7 @@ namespace Unit.Repository.Extensions
 {
     public static class RepositoryUserExtensions
     {
-        public static IEnumerable<User> Sort(this IEnumerable<User> users, 
+        public static IEnumerable<User> Sort(this IEnumerable<User> users,
             string? orderByQueryString)
         {
             if (string.IsNullOrWhiteSpace(orderByQueryString))
