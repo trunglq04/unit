@@ -13,7 +13,17 @@ namespace Unit.API.ActionFilter
         public ImageFileValidationFilter(long maxFileSize = 10 * 1024 * 1024, string[]? permittedImageTypes = null)
         {
             _maxFileSize = maxFileSize;
-            _permittedImageTypes = permittedImageTypes ?? new[] { "image/jpeg", "image/png", "image/gif" };
+            _permittedImageTypes = permittedImageTypes ?? new[]
+                                                            {
+                                                                "image/jpeg",
+                                                                "image/png",
+                                                                "image/gif",
+                                                                "image/bmp",
+                                                                "image/webp",
+                                                                "image/tiff",
+                                                                "image/svg+xml"
+                                                            };
+
         }
 
         public void OnActionExecuting(ActionExecutingContext context)
@@ -37,7 +47,7 @@ namespace Unit.API.ActionFilter
                     context.Result = new BadRequestObjectResult(new ErrorDetails()
                     {
                         StatusCode = StatusCodes.Status400BadRequest,
-                        Message = UserExMsg.ProfileImageOverSize
+                        Message = UserExMsg.ProfileImageOverSize10Mb
                     });
                     return;
                 }

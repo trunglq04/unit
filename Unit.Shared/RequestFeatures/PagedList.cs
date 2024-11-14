@@ -8,7 +8,7 @@
         {
             MetaData = new MetaData
             {
-                NexPageKey = pageKey,
+                NextPageKey = pageKey,
                 PageSize = size
             };
 
