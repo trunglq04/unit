@@ -11,7 +11,6 @@ namespace Unit.Service.Contracts
 
         Task CreatePost(PostDtoForCreation post, string userId, List<string>? mediaPath = null);
 
-        Task<(IEnumerable<PostDto> posts, MetaData metaData)> GetPosts(PostParameters request, string userId);
-
+        Task<(IEnumerable<PostDto> posts, MetaData metaData)> GetPosts(PostParameters request, string token);
     }
 }

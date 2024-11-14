@@ -25,11 +25,13 @@ namespace Unit.Repository
         {
             var filterExpression = new StringBuilder();
 
-            filterExpression.Append("is_hidden = :isHidden");
+            filterExpression.Append(" user_id = :userId OR is_hidden = :isHidden");
 
             var expressionAttributeValues = new Dictionary<string, AttributeValue>
             {
                 { ":isHidden", new AttributeValue { N = "0" } },
+                { ":userId", new AttributeValue { S = request.UserId } },
+
             };
 
             if (userFollowing != null && userFollowing.Any())
@@ -69,14 +71,44 @@ namespace Unit.Repository
             return new PagedList<Post>(listPosts, posts.pageKey, request.Size);
         }
 
-        public Task<PagedList<Post>> GetPostsByUserId(PostParameters request, string userId, string postId)
+        //userId o day la id cua nguoi gui request
+        //userId trong PostParameters la userId cua query
+        public async Task<PagedList<Post>> GetPostsByUserId(PostParameters request)
         {
-            //var
 
-            //var filterExpression = new StringBuilder();
+            var keyCondition = new StringBuilder();
+            keyCondition.Append("user_id = :userId");
 
-            //filterExpression.Append("is_hidden = :isHidden");
-            throw new NotImplementedException();
+            var filterExpression = new StringBuilder();
+
+            filterExpression.Append("is_hidden = :isHidden");
+
+            var expressionAttributeValues = new Dictionary<string, AttributeValue>
+            {
+                { ":userId", new AttributeValue { S = request.UserId } },
+                { ":isHidden", new AttributeValue { N = "0" } }
+            };
+
+            if (request.PostId != null && !string.IsNullOrWhiteSpace(request.PostId))
+            {
+                keyCondition.Append(" AND post_id = :postId");
+                expressionAttributeValues[":postId"] = new AttributeValue() { S = request.PostId };
+            }
+
+            if (request.IsHidden != null && (bool)request.IsHidden)
+            {
+                expressionAttributeValues[":isHidden"] = new AttributeValue() { N = "1" };
+            }
+            if (filterExpression.Length == 0) filterExpression = null;
+            var posts = await FindByConditionAsync(
+                request,
+                keyCondition,
+                filterExpression,
+                expressionAttributeValues
+                );
+            var listPosts = posts.listEntity.Sort(request.OrderBy).ToList();
+
+            return new PagedList<Post>(listPosts, posts.pageKey, request.Size);
         }
 
         public async Task UpdateUserAsync(Post post)

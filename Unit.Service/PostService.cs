@@ -9,6 +9,7 @@ using Unit.Entities.Exceptions.Messages;
 using Unit.Entities.Models;
 using Unit.Repository.Contracts;
 using Unit.Service.Contracts;
+using Unit.Service.Helper;
 using Unit.Shared.DataTransferObjects;
 using Unit.Shared.RequestFeatures;
 
@@ -50,21 +51,53 @@ namespace Unit.Service
             postEntity.LastModified = DateTime.UtcNow;
             postEntity.UserId = userId;
             postEntity.IsPrivate = user.Private;
+            postEntity.UserName = user.UserName;
+            postEntity.ProfilePicture = user.ProfilePicture;
 
             if (mediaPath != null && mediaPath.Any()) postEntity.Media.AddRange(mediaPath);
 
             await _repository.Post.CreatePostAsync(postEntity);
         }
 
-        public async Task<(IEnumerable<PostDto> posts, MetaData metaData)> GetPosts(PostParameters request, string userId)
+        //userId o day la id cua nguoi gui request
+        //userId trong PostParameters la userId cua query
+        public async Task<(IEnumerable<PostDto> posts, MetaData metaData)> GetPosts(PostParameters request, string token)
         {
-            var user = string.IsNullOrWhiteSpace(request.UserId) ? await _repository.User.GetUserAsync(userId) : await _repository.User.GetUserAsync(request.UserId);
+            var userId = JwtHelper.GetPayloadData(token, "username");
 
-            var postsEntity = await _repository.Post.GetPosts(request, user.Following);
+            if (!string.IsNullOrWhiteSpace(request.UserId) && !request.UserId.Equals(userId))
+            {
+                var user = await _repository.User.GetUserAsync(request.UserId!);
 
-            var postsDto = _mapper.Map<List<PostDto>>(postsEntity);
+                if (user.Private && user.Followers.Any() && !user.Followers.Contains(userId!)) throw new BadRequestException(UserExMsg.DoNotHavePermissionToView);
+                request.IsHidden = false;
 
-            return (posts: postsDto, metaData: postsEntity.MetaData);
+                var postsEntity = await _repository.Post.GetPostsByUserId(request);
+
+                var postsDto = _mapper.Map<List<PostDto>>(postsEntity);
+
+                return (posts: postsDto, metaData: postsEntity.MetaData);
+            }
+            else if ((request.MyPost != null && (bool)request.MyPost) || (!string.IsNullOrWhiteSpace(request.UserId) && request.UserId.Equals(userId)))
+            {
+                request.UserId = userId;
+                var postsEntity = await _repository.Post.GetPostsByUserId(request);
+
+                var postsDto = _mapper.Map<List<PostDto>>(postsEntity);
+
+                return (posts: postsDto, metaData: postsEntity.MetaData);
+            }
+            else
+            {
+                var user = await _repository.User.GetUserAsync(userId!);
+
+                request.UserId = userId;
+                var postsEntity = await _repository.Post.GetPosts(request, user.Following);
+
+                var postsDto = _mapper.Map<List<PostDto>>(postsEntity);
+
+                return (posts: postsDto, metaData: postsEntity.MetaData);
+            }
         }
 
         public async Task<string> UploadMediaPostAsync(string userId, Stream fileStream, string fileExtension)
