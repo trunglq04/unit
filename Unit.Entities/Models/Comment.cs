@@ -6,27 +6,36 @@ namespace Unit.Entities.Models
     public class Comment
     {
         [DynamoDBHashKey("post_id")] // Partition Key
-        public string PostId { get; set; }
+        public required string PostId { get; set; }
 
-        [DynamoDBRangeKey("comment_id")]
-        public required string CommentId { get; set; } = Guid.NewGuid().ToString();
+        [DynamoDBRangeKey("comment_id")] // Sort Key
+        public string CommentId { get; set; } = Guid.NewGuid().ToString();
 
-        [DynamoDBProperty("user_id")]
-        public required string UserId { get; set; }
+        [DynamoDBProperty("attachments")]
+        public List<Attachment> Attachments { get; set; } = new();
+
+        [DynamoDBProperty("author_id")]
+        public required string AuthorId { get; set; }
 
         [DynamoDBProperty("content")]
         public required string Content { get; set; }
 
-        [DynamoDBProperty("create_at")]
+        [DynamoDBProperty("created_at")]
         public DateTime CreatedAt { get; set; }
 
-        [DynamoDBProperty("last_modified")]
-        public DateTime LastModified { get; set; }
+        [DynamoDBProperty("updated_at")]
+        public DateTime UpdatedAt { get; set; }
+
+        [DynamoDBProperty("mentions")]
+        public List<string> Mentions { get; set; } = new();
+
+        [DynamoDBProperty("metadata")]
+        public Metadata Metadata { get; set; } = new();
+
+        [DynamoDBProperty("tags")]
+        public List<string> Tags { get; set; } = new();
 
         [DynamoDBProperty("parent_comment_id")]
-        public string? ParentCommentId { get; set; } // null if this is a top-level comment
-
-        [DynamoDBProperty("reactions")]
-        public List<Interaction> Reactions { get; set; } = new();
+        public string? ParentCommentId { get; set; }            // null if this is a top-level comment
     }
 }

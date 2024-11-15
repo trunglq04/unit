@@ -9,6 +9,7 @@ using Unit.Repository.Contracts;
 using Unit.Service;
 using Unit.Service.Contracts;
 using Unit.Shared.DataTransferObjects;
+using Unit.Shared.DataTransferObjects.Comment;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +35,8 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 
 builder.Services.AddScoped<ValidationFilterAttribute>();
 builder.Services.AddScoped<ValidationFilterPasswordConfirmation>();
+//builder.Services.AddScoped<ImageFileValidationFilter>();
+//builder.Services.AddScoped<FileValidationFilter>();
 
 builder.Services.AddAuthorization();
 builder.Services
@@ -42,6 +45,9 @@ builder.Services
 builder.Services.ConfigureOptions<JwtBearerConfigurationOptions>();
 
 builder.Services.AddScoped<IDataShaper<UserDto>, DataShaper<UserDto>>();
+//builder.Services.AddScoped<IDataShaper<PostDto>, DataShaper<PostDto>>();
+builder.Services.AddScoped<IDataShaper<CommentDto>, DataShaper<CommentDto>>();
+
 
 builder.Services.AddControllers();
 

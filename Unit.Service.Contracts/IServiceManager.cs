@@ -11,5 +11,7 @@ namespace Unit.Service.Contracts
         IUserService UserService { get; }
 
         IAuthenticationService AuthenticationService { get; }
+
+        ICommentService CommentService { get; }
     }
 }

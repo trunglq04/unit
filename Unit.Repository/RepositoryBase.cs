@@ -6,7 +6,6 @@ using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Unit.Shared.RequestFeatures;
-using Unit.Repository.Extensions;
 using System.Text;
 
 namespace Unit.Repository
@@ -55,23 +54,57 @@ namespace Unit.Repository
             return null;
         }
 
-        public string GetTableName()
+        private string GetTableName()
         {
             var tableAttribute = typeof(T).GetCustomAttribute<DynamoDBTableAttribute>();
             return tableAttribute!.TableName;
         }
 
-
-
         public async Task<List<T>> FindAllAsync()
             => await _dynamoDbContext.ScanAsync<T>(new List<ScanCondition>()).GetRemainingAsync();
 
-        public async Task<QueryResponse> FindByConditionAsync(QueryRequest query)
-            => await _dynamoDbClient.QueryAsync(query);
-
-        public async Task<(IEnumerable<T> listEntity, string pageKey)> FindByConditionAsync(RequestParameters request, StringBuilder? filterExpression = null, Dictionary<string, AttributeValue>? expressionAttributeValues = null)
+        public async Task<(IEnumerable<T> listEntity, string pageKey)> FindByConditionAsync(
+            RequestParameters request, 
+            StringBuilder keyConditionExpression, 
+            Dictionary<string, AttributeValue>? expressionAttributeValues = null,
+            StringBuilder? filterExpression = null)
         {
             var exlusiveStartKey = string.IsNullOrWhiteSpace(request.Page) ? null : JsonSerializer.Deserialize<Dictionary<string, AttributeValue>>(Convert.FromBase64String(request.Page));
+
+            var queryRequest = new QueryRequest
+            {
+                TableName = GetTableName(),
+                Limit = request.Size,
+                ExclusiveStartKey = exlusiveStartKey,
+                KeyConditionExpression = keyConditionExpression.ToString(),
+                FilterExpression = filterExpression?.ToString(),
+                ExpressionAttributeValues = expressionAttributeValues,
+                ProjectionExpression = FieldsBuilder(request.Fields),
+            };
+
+            var response = await _dynamoDbClient.QueryAsync(queryRequest);
+
+            var items = response.Items.Select(u =>
+            {
+                var doc = Document.FromAttributeMap(u);
+                return _dynamoDbContext.FromDocument<T>(doc);
+            }).ToList();
+
+            var nextPageKey = response.LastEvaluatedKey.Count == 0 ? null : Convert.ToBase64String(JsonSerializer.SerializeToUtf8Bytes(response.LastEvaluatedKey, new JsonSerializerOptions()
+            {
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
+            }));
+
+            return (items, nextPageKey);
+        }
+
+        public async Task<(IEnumerable<T> listEntity, string pageKey)> FindByConditionAsync(
+            RequestParameters request, 
+            StringBuilder? filterExpression = null, 
+            Dictionary<string, AttributeValue>? expressionAttributeValues = null)
+        {
+            var exlusiveStartKey = string.IsNullOrWhiteSpace(request.Page) ? null : JsonSerializer.Deserialize<Dictionary<string, AttributeValue>>(Convert.FromBase64String(request.Page));
+
             var scanRequest = new ScanRequest
             {
                 TableName = GetTableName(),
@@ -97,7 +130,6 @@ namespace Unit.Repository
 
             return (items, nextPageKey);
         }
-
 
         public async Task<T> FindByIdAsync(object partitionKey)
             => await _dynamoDbContext.LoadAsync<T>(partitionKey);
