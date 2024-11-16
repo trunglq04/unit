@@ -76,7 +76,7 @@ namespace Unit.API.Controllers
         {
             var userId = JwtHelper.GetPayloadData(token, "username");
             string imagePath = null;
-            if (imageFile != null)
+            if (imageFile != null && imageFile.Length > 0)
             {
                 var tempFilePath = Path.GetTempFileName();
 

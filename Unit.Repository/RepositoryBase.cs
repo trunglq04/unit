@@ -18,7 +18,7 @@ namespace Unit.Repository
         private static readonly Dictionary<string, string?> PropertyCache = typeof(T)
             .GetProperties()
             .ToDictionary(
-                prop => prop.Name,
+                prop => prop.Name.ToLower(),
                 prop => prop.GetCustomAttributes(typeof(DynamoDBPropertyAttribute), false)
                             .FirstOrDefault() is DynamoDBPropertyAttribute attribute ? attribute.AttributeName : null
             );
@@ -34,7 +34,7 @@ namespace Unit.Repository
         {
             if (!string.IsNullOrWhiteSpace(fields))
             {
-                var listFields = fields.Split(',');
+                var listFields = fields.ToLower().Split(',');
 
                 var dynamoDbFields = listFields.Select(field =>
                 {
@@ -63,11 +63,8 @@ namespace Unit.Repository
         public async Task<List<T>> FindAllAsync()
             => await _dynamoDbContext.ScanAsync<T>(new List<ScanCondition>()).GetRemainingAsync();
 
-        public async Task<(IEnumerable<T> listEntity, string pageKey)> FindByConditionAsync(
-            RequestParameters request, 
-            StringBuilder keyConditionExpression, 
-            Dictionary<string, AttributeValue>? expressionAttributeValues = null,
-            StringBuilder? filterExpression = null)
+
+        public async Task<(IEnumerable<T> listEntity, string pageKey)> FindByConditionAsync(RequestParameters request, StringBuilder keyConditionExpression, StringBuilder? filterExpression = null, Dictionary<string, AttributeValue>? expressionAttributeValues = null)
         {
             var exlusiveStartKey = string.IsNullOrWhiteSpace(request.Page) ? null : JsonSerializer.Deserialize<Dictionary<string, AttributeValue>>(Convert.FromBase64String(request.Page));
 
