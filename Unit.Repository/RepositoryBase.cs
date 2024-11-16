@@ -25,7 +25,7 @@ namespace Unit.Repository
         private static readonly Dictionary<string, string?> PropertyCache = typeof(T)
             .GetProperties()
             .ToDictionary(
-                prop => prop.Name,
+                prop => prop.Name.ToLower(),
                 prop => prop.GetCustomAttributes(typeof(DynamoDBPropertyAttribute), false)
                             .FirstOrDefault() is DynamoDBPropertyAttribute attribute ? attribute.AttributeName : null
             );
@@ -41,7 +41,7 @@ namespace Unit.Repository
         {
             if (!string.IsNullOrWhiteSpace(fields))
             {
-                var listFields = fields.Split(',');
+                var listFields = fields.ToLower().Split(',');
 
                 var dynamoDbFields = listFields.Select(field =>
                 {
