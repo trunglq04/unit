@@ -2,8 +2,10 @@
 using AutoMapper;
 using System.Collections.Generic;
 using Unit.Entities.Models;
-using Unit.Shared.DataTransferObjects;
+using Unit.Shared.DataTransferObjects.Authentication;
 using Unit.Shared.DataTransferObjects.Comment;
+using Unit.Shared.DataTransferObjects.Post;
+using Unit.Shared.DataTransferObjects.User;
 using Unit.Shared.RequestFeatures;
 
 namespace Unit.API
@@ -31,7 +33,7 @@ namespace Unit.API
             CreateMap<MetadataDto, Metadata>();
             CreateMap<Attachment, AttachmentDto>();
             CreateMap<AttachmentDto, Attachment>();
-
+            CreateMap<Attachment, AttachmentDto>();
         }
     }
 }

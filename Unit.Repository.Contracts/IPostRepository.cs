@@ -1,5 +1,4 @@
 ﻿using Unit.Entities.Models;
-using Unit.Shared.DataTransferObjects;
 using Unit.Shared.RequestFeatures;
 
 namespace Unit.Repository.Contracts

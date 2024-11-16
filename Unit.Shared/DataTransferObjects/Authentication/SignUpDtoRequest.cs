@@ -1,13 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿
+using System.ComponentModel.DataAnnotations;
 using Unit.Shared.CustomValidationAttribute;
 
-namespace Unit.Shared.DataTransferObjects
+namespace Unit.Shared.DataTransferObjects.Authentication
 {
-    public record ResetPasswordDtoRequest : IPasswordConfirmation
+    public record SignUpDtoRequest : IPasswordConfirmation
     {
-        [Required]
-        public required string Code { get; init; }
-
         [Required]
         public required string Email { get; init; }
 

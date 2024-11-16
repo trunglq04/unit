@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualBasic;
 
-namespace Unit.Shared.DataTransferObjects
+namespace Unit.Shared.DataTransferObjects.Post
 {
     public class PostDto
     {

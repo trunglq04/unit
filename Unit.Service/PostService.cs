@@ -1,7 +1,6 @@
 using Amazon.S3;
 using Amazon.S3.Model;
 using AutoMapper;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Unit.Entities.ConfigurationModels;
 using Unit.Entities.Exceptions;
@@ -10,7 +9,7 @@ using Unit.Entities.Models;
 using Unit.Repository.Contracts;
 using Unit.Service.Contracts;
 using Unit.Service.Helper;
-using Unit.Shared.DataTransferObjects;
+using Unit.Shared.DataTransferObjects.Post;
 using Unit.Shared.RequestFeatures;
 
 

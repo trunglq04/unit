@@ -1,6 +1,4 @@
-using System.Dynamic;
-using Unit.Entities.Models;
-using Unit.Shared.DataTransferObjects;
+using Unit.Shared.DataTransferObjects.Post;
 using Unit.Shared.RequestFeatures;
 
 namespace Unit.Service.Contracts

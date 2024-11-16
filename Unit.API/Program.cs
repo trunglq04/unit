@@ -5,10 +5,12 @@ using NLog;
 using Unit.API.ActionFilter;
 using Unit.API.Configuration;
 using Unit.API.Extensions;
+using Unit.Repository.Contracts;
 using Unit.Service;
 using Unit.Service.Contracts;
-using Unit.Shared.DataTransferObjects;
 using Unit.Shared.DataTransferObjects.Comment;
+using Unit.Shared.DataTransferObjects.Post;
+using Unit.Shared.DataTransferObjects.User;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,8 +36,6 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 
 builder.Services.AddScoped<ValidationFilterAttribute>();
 builder.Services.AddScoped<ValidationFilterPasswordConfirmation>();
-builder.Services.AddScoped<ImageFileValidationFilter>();
-builder.Services.AddScoped<FileValidationFilter>();
 
 builder.Services.AddAuthorization();
 builder.Services
@@ -47,7 +47,6 @@ builder.Services.AddScoped<IDataShaper<UserDto>, DataShaper<UserDto>>();
 builder.Services.AddScoped<IDataShaper<UserDto>, DataShaper<UserDto>>();
 builder.Services.AddScoped<IDataShaper<CommentDto>, DataShaper<CommentDto>>();
 builder.Services.AddScoped<IDataShaper<PostDto>, DataShaper<PostDto>>();
-
 builder.Services.AddControllers();
 
 // Build the app

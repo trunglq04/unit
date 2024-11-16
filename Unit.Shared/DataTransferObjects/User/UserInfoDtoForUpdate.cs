@@ -1,6 +1,4 @@
-﻿
-
-namespace Unit.Shared.DataTransferObjects
+﻿namespace Unit.Shared.DataTransferObjects.User
 {
     public record UserInfoDtoForUpdate
     {

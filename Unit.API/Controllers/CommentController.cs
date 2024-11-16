@@ -71,8 +71,8 @@ namespace Unit.API.Controllers
             string postId,
             string commentId)
         {
-            var comment = new CommentDto 
-            { 
+            var comment = new CommentDto
+            {
                 CommentId = commentId,
                 PostId = postId,
                 Content = string.Empty,

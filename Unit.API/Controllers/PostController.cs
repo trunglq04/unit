@@ -6,6 +6,7 @@ using Unit.API.ActionFilter;
 using Unit.Service.Contracts;
 using Unit.Service.Helper;
 using Unit.Shared.DataTransferObjects;
+using Unit.Shared.DataTransferObjects.Post;
 using Unit.Shared.RequestFeatures;
 
 namespace Unit.API.Controllers

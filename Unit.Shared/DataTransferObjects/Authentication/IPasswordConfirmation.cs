@@ -1,5 +1,4 @@
-﻿
-namespace Unit.Shared.DataTransferObjects
+﻿namespace Unit.Shared.DataTransferObjects.Authentication
 {
     public interface IPasswordConfirmation
     {

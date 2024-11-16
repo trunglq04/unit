@@ -108,8 +108,8 @@ namespace Unit.Repository
         }
 
         public async Task<(IEnumerable<T> listEntity, string pageKey)> FindByConditionAsync(
-            RequestParameters request, 
-            StringBuilder? filterExpression = null, 
+            RequestParameters request,
+            StringBuilder? filterExpression = null,
             Dictionary<string, AttributeValue>? expressionAttributeValues = null)
         {
             var exlusiveStartKey = string.IsNullOrWhiteSpace(request.Page) ? null : JsonSerializer.Deserialize<Dictionary<string, AttributeValue>>(Convert.FromBase64String(request.Page));
