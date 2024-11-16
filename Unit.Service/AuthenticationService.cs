@@ -10,7 +10,7 @@ using Unit.Entities.Exceptions.Messages;
 using Unit.Entities.Models;
 using Unit.Repository.Contracts;
 using Unit.Service.Contracts;
-using Unit.Shared.DataTransferObjects;
+using Unit.Shared.DataTransferObjects.Authentication;
 
 namespace Unit.Service
 {

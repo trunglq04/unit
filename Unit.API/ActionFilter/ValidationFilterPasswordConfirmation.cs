@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Unit.Entities.ErrorModel;
 using Unit.Entities.Exceptions;
-using Unit.Shared.DataTransferObjects;
+using Unit.Shared.DataTransferObjects.Authentication;
 
 namespace Unit.API.ActionFilter
 {

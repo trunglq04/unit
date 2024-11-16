@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 
-namespace Unit.Shared.DataTransferObjects
+namespace Unit.Shared.DataTransferObjects.Authentication
 {
     public record TokenDtoResponse
     {

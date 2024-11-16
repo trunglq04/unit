@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Unit.API.ActionFilter;
 using Unit.Service.Contracts;
-using Unit.Shared.DataTransferObjects;
+using Unit.Shared.DataTransferObjects.Authentication;
 
 namespace Unit.API.Controllers
 {

@@ -1,5 +1,4 @@
-﻿
-namespace Unit.Entities.ConfigurationModels
+﻿namespace Unit.Entities.ConfigurationModels
 {
     public class AWSConfiguration
     {

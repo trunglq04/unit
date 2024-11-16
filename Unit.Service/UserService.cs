@@ -1,6 +1,5 @@
 using Amazon.S3;
 using Amazon.S3.Model;
-using Amazon.Util;
 using AutoMapper;
 using Microsoft.Extensions.Options;
 using System.Dynamic;
@@ -9,7 +8,7 @@ using Unit.Entities.Models;
 using Unit.Repository.Contracts;
 using Unit.Service.Contracts;
 using Unit.Service.Helper;
-using Unit.Shared.DataTransferObjects;
+using Unit.Shared.DataTransferObjects.User;
 using Unit.Shared.RequestFeatures;
 
 namespace Unit.Service

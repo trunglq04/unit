@@ -1,5 +1,5 @@
 ﻿using System.Dynamic;
-using Unit.Shared.DataTransferObjects;
+using Unit.Shared.DataTransferObjects.User;
 using Unit.Shared.RequestFeatures;
 
 namespace Unit.Service.Contracts

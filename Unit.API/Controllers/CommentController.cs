@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 using Unit.API.ActionFilter;
 using Unit.Service.Contracts;
 using Unit.Shared.DataTransferObjects.Comment;
@@ -26,8 +27,10 @@ namespace Unit.API.Controllers
 
             if (comments.commentsDto != null)
             {
-                return Ok(comments);
-            } 
+
+                Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(comments.metaData));
+                return Ok(comments.commentsDto);
+            }
             else
             {
                 return NotFound();
@@ -50,8 +53,8 @@ namespace Unit.API.Controllers
         [HttpPut("{commentId}")]
         [Authorize]
         public async Task<IActionResult> UpdateComment(
-            [FromHeader(Name = "Authorization")] string token, 
-            [FromBody] CommentDto comment, 
+            [FromHeader(Name = "Authorization")] string token,
+            [FromBody] CommentDto comment,
             string postId,
             string commentId)
         {
@@ -69,8 +72,8 @@ namespace Unit.API.Controllers
             string postId,
             string commentId)
         {
-            var comment = new CommentDto 
-            { 
+            var comment = new CommentDto
+            {
                 CommentId = commentId,
                 PostId = postId,
                 Content = string.Empty,

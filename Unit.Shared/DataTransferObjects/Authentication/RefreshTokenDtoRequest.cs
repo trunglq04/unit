@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 
-namespace Unit.Shared.DataTransferObjects
+namespace Unit.Shared.DataTransferObjects.Authentication
 {
     public record RefreshTokenDtoRequest
     {

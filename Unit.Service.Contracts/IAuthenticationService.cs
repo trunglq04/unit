@@ -1,6 +1,5 @@
-﻿
-using Amazon.CognitoIdentityProvider.Model;
-using Unit.Shared.DataTransferObjects;
+﻿using Amazon.CognitoIdentityProvider.Model;
+using Unit.Shared.DataTransferObjects.Authentication;
 
 namespace Unit.Service.Contracts
 {

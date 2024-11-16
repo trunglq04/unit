@@ -15,7 +15,7 @@ namespace Unit.Repository
 
         public async Task<PagedList<Comment>> GetCommentsByPostId(CommentParameters commentParameters, string postId)
         {
-            var filterExpression = new StringBuilder("post_id = :postId");
+            var keyExpression = new StringBuilder("post_id = :postId");
             var expressionAttributeValues = new Dictionary<string, AttributeValue>
             {
                 { ":postId", new AttributeValue { S = postId } }
@@ -23,9 +23,8 @@ namespace Unit.Repository
 
             var comments = await FindByConditionAsync(
                 commentParameters,
-                filterExpression,
-                expressionAttributeValues,
-                null
+                keyExpression,
+                expressionAttributeValues
             );
 
             var listComments = comments.listEntity.Sort(commentParameters.OrderBy).ToList();
@@ -33,7 +32,7 @@ namespace Unit.Repository
             return new PagedList<Comment>(listComments, comments.pageKey, commentParameters.Size);
         }
 
-        public async Task CreateCommentAsync(Comment comment) 
+        public async Task CreateCommentAsync(Comment comment)
             => await CreateAsync(comment);
 
         public async Task UpdateCommentAsync(Comment comment)

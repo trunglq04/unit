@@ -1,5 +1,5 @@
 ﻿using System;
-using Unit.Shared.DataTransferObjects;
+using Unit.Shared.DataTransferObjects.User;
 
 namespace Unit.Shared.RequestFeatures
 {
