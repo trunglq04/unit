@@ -18,8 +18,7 @@ namespace Unit.Service
         private readonly Lazy<ICommentService> _commentService;
         private readonly Lazy<IPostService> _postService;
 
-        public ServiceManager(IRepositoryManager repositoryManager, ILoggerManager logger, IAmazonCognitoIdentityProvider cognitoProvider, IOptions<AWSConfiguration> configuration, IMapper mapper, IDataShaper<UserDto> userShaper, IDataShaper<CommentDto> cmtShaper)
-        public ServiceManager(IRepositoryManager repositoryManager, ILoggerManager logger, IAmazonCognitoIdentityProvider cognitoProvider, IOptions<AWSConfiguration> configuration, IMapper mapper, IDataShaper<UserDto> userShaper, IDataShaper<PostDto> postShaper, IAmazonS3 s3Client)
+        public ServiceManager(IRepositoryManager repositoryManager, ILoggerManager logger, IAmazonCognitoIdentityProvider cognitoProvider, IOptions<AWSConfiguration> configuration, IMapper mapper, IDataShaper<UserDto> userShaper, IDataShaper<CommentDto> cmtShaper, IDataShaper<PostDto> postShaper, IAmazonS3 s3Client)
         {
             _userService = new Lazy<IUserService>(() => new UserService(repositoryManager, logger, mapper, userShaper, s3Client, configuration));
             _authenticationService = new Lazy<IAuthenticationService>(() => new AuthenticationService(repositoryManager, logger, mapper, cognitoProvider, configuration));

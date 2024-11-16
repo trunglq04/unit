@@ -11,10 +11,10 @@ namespace Unit.Repository
 {
     public class PostRepository : RepositoryBase<Post>, IPostRepository
     {
-
         public PostRepository(IDynamoDBContext dynamoDbContext, IAmazonDynamoDB dynamoDbClient) : base(dynamoDbContext, dynamoDbClient) { }
+
         public async Task CreatePostAsync(Post post)
-        => await CreateAsync(post);
+            => await CreateAsync(post);
 
         public Task<Post> GetPostByPostId(PostParameters request, string userId)
         {
@@ -99,19 +99,24 @@ namespace Unit.Repository
             {
                 expressionAttributeValues[":isHidden"] = new AttributeValue() { N = "1" };
             }
-            if (filterExpression.Length == 0) filterExpression = null;
+
+            if (filterExpression.Length == 0)
+            {
+                filterExpression = null;
+            }
+            
             var posts = await FindByConditionAsync(
                 request,
                 keyCondition,
-                filterExpression,
-                expressionAttributeValues
-                );
+                expressionAttributeValues,
+                filterExpression
+             );
             var listPosts = posts.listEntity.Sort(request.OrderBy).ToList();
 
             return new PagedList<Post>(listPosts, posts.pageKey, request.Size);
         }
 
         public async Task UpdateUserAsync(Post post)
-         => await UpdateUserAsync(post);
+            => await UpdateUserAsync(post);
     }
 }
