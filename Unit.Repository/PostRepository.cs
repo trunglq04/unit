@@ -100,18 +100,13 @@ namespace Unit.Repository
             {
                 expressionAttributeValues[":isHidden"] = new AttributeValue() { N = "1" };
             }
-
-            if (filterExpression.Length == 0)
-            {
-                filterExpression = null;
-            }
-            
+            if (filterExpression.Length == 0) filterExpression = null;
             var posts = await FindByConditionAsync(
                 request,
                 keyCondition,
-                expressionAttributeValues,
-                filterExpression
-             );
+                filterExpression,
+                expressionAttributeValues
+                );
             var listPosts = posts.listEntity.Sort(request.OrderBy).ToList();
 
             return new PagedList<Post>(listPosts, posts.pageKey, request.Size);
