@@ -5,7 +5,6 @@ using NLog;
 using Unit.API.ActionFilter;
 using Unit.API.Configuration;
 using Unit.API.Extensions;
-using Unit.Repository.Contracts;
 using Unit.Service;
 using Unit.Service.Contracts;
 using Unit.Shared.DataTransferObjects;
@@ -45,7 +44,6 @@ builder.Services
 builder.Services.ConfigureOptions<JwtBearerConfigurationOptions>();
 
 builder.Services.AddScoped<IDataShaper<UserDto>, DataShaper<UserDto>>();
-//builder.Services.AddScoped<IDataShaper<PostDto>, DataShaper<PostDto>>();
 builder.Services.AddScoped<IDataShaper<CommentDto>, DataShaper<CommentDto>>();
 builder.Services.AddScoped<IDataShaper<PostDto>, DataShaper<PostDto>>();
 

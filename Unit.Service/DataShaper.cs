@@ -1,6 +1,6 @@
 ﻿using System.Dynamic;
 using System.Reflection;
-using Unit.Repository.Contracts;
+using Unit.Service.Contracts;
 
 namespace Unit.Service
 {
