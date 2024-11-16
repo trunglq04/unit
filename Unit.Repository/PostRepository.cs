@@ -31,6 +31,7 @@ namespace Unit.Repository
             {
                 { ":isHidden", new AttributeValue { N = "0" } },
                 { ":userId", new AttributeValue { S = request.UserId } },
+
             };
 
             if (userFollowing != null && userFollowing.Any())
@@ -106,7 +107,6 @@ namespace Unit.Repository
                 expressionAttributeValues
                 );
             var listPosts = posts.listEntity.Sort(request.OrderBy).ToList();
-
 
             return new PagedList<Post>(listPosts, posts.pageKey, request.Size);
         }
