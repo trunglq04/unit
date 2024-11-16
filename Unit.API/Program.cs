@@ -43,8 +43,6 @@ builder.Services
     .AddJwtBearer();
 builder.Services.ConfigureOptions<JwtBearerConfigurationOptions>();
 builder.Services.AddScoped<IDataShaper<UserDto>, DataShaper<UserDto>>();
-
-builder.Services.AddScoped<IDataShaper<UserDto>, DataShaper<UserDto>>();
 builder.Services.AddScoped<IDataShaper<CommentDto>, DataShaper<CommentDto>>();
 builder.Services.AddScoped<IDataShaper<PostDto>, DataShaper<PostDto>>();
 builder.Services.AddControllers();

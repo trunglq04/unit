@@ -1,7 +1,6 @@
 ﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.Model;
-using System.ComponentModel;
 using System.Text;
 using Unit.Entities.Models;
 using Unit.Repository.Contracts;
@@ -16,7 +15,7 @@ namespace Unit.Repository
 
         public async Task<PagedList<Comment>> GetCommentsByPostId(CommentParameters parameters, string postId)
         {
-            var keyExpression = new StringBuilder("post_id = :postId");
+            var filterExpression = new StringBuilder("post_id = :postId");
             var expressionAttributeValues = new Dictionary<string, AttributeValue>
             {
                 { ":postId", new AttributeValue { S = postId } }
