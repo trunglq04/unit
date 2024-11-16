@@ -12,20 +12,24 @@ namespace Unit.API
     {
         public MappingProfile()
         {
-            //user
+            // user
             CreateMap<AuthenticationResultType, TokenDtoResponse>();
             CreateMap<User, UserDto>();
             CreateMap<UserInfoDtoForUpdate, User>()
             .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
-            //post
+            // post
             CreateMap<Post, PostDto>();
             CreateMap<PostDtoForCreation, Post>();
 
+            // comment
             CreateMap<Comment, CommentDto>();
             CreateMap<CommentDto, Comment>();
-
+            CreateMap<CreateCommentDto, Comment>();
+            CreateMap<UpdateCommentDto, Comment>();
+            CreateMap<Metadata, MetadataDto>();
             CreateMap<MetadataDto, Metadata>();
+            CreateMap<Attachment, AttachmentDto>();
             CreateMap<AttachmentDto, Attachment>();
 
         }

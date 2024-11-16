@@ -15,6 +15,7 @@ namespace Unit.Repository.Extensions
 
             if (string.IsNullOrWhiteSpace(orderQuery))
                 return posts.OrderBy(e => e.CreatedAt);
+
             return posts.AsQueryable().OrderBy(orderQuery);
         }
     }

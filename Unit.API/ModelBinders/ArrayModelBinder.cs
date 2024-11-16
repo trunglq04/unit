@@ -25,19 +25,19 @@ namespace Unit.API.ModelBinders
             }
 
             var genericType = bindingContext.ModelType.GetTypeInfo().GenericTypeArguments[0];
-
             var converter = TypeDescriptor.GetConverter(genericType);
 
             var objectArray = providedValue.Split(new[] { "," },
                 StringSplitOptions.RemoveEmptyEntries)
-                .Select(c
-                    => converter.ConvertFromString(c.Trim())).ToArray();
+                    .Select(c => converter.ConvertFromString(c.Trim()))
+                    .ToArray();
 
             var idArray = Array.CreateInstance(genericType, objectArray.Length);
             objectArray.CopyTo(idArray, 0);
-            bindingContext.Model = idArray;
 
+            bindingContext.Model = idArray;
             bindingContext.Result = ModelBindingResult.Success(bindingContext.Model);
+
             return Task.CompletedTask;
         }
     }

@@ -1,17 +1,14 @@
 ﻿namespace Unit.Shared.DataTransferObjects.Comment
 {
-    public class CommentDto
+    public class CreateCommentDto
     {
-        public string? AuthorId { get; set; }
         public string? PostId { get; set; }
 
-        public string? CommentId { get; set; }        // auto-generate
+        public string? CommentId { get; set; } = Guid.NewGuid().ToString();         // auto-generate
 
-        public required string Content { get; set; }
+        public required string Content { get; set; } = string.Empty;
 
         public DateTime? CreatedAt { get; set; } = DateTime.Now;
-
-        public DateTime? UpdatedAt { get; set; } = DateTime.Now;
 
         public string? ParentCommentId { get; set; } // null if this is a top-level comment
 
@@ -19,7 +16,8 @@
 
         public List<string>? Mentions { get; set; } = new();
 
-        public MetadataDto? Metadata { get; set; } = new() {
+        public MetadataDto? Metadata { get; set; } = new()
+        {
             IsEdited = false,
             Likes = new(),
             Replies = 0

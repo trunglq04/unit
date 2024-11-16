@@ -1,6 +1,7 @@
 ﻿using Amazon.CognitoIdentityProvider.Model;
 using AutoMapper;
 using System.Dynamic;
+using System.Xml.Linq;
 using Unit.Entities.Exceptions;
 using Unit.Entities.Models;
 using Unit.Repository.Contracts;
@@ -14,11 +15,8 @@ namespace Unit.Service
     public class CommentService : ICommentService
     {
         private readonly ILoggerManager _logger;
-
         private readonly IRepositoryManager _repository;
-
         private readonly IMapper _mapper;
-
         private readonly IDataShaper<CommentDto> _commentShaper;
 
         public CommentService(IRepositoryManager repository, ILoggerManager logger, IMapper mapper, IDataShaper<CommentDto> commentShaper)
@@ -29,26 +27,33 @@ namespace Unit.Service
             _commentShaper = commentShaper;
         }
 
-        public async Task<(IEnumerable<ExpandoObject> commentsDto, MetaData metaData)> GetCommentsByPostIdAsync(CommentParameters parameters, string postId)
+        public async Task<(IEnumerable<ExpandoObject> commentsDto, MetaData metaData)> GetCommentsByPostIdAsync(
+            CommentParameters parameters, 
+            string postId)
         {
             var comments = await _repository.Comment.GetCommentsByPostId(parameters, postId);
 
-            var shapedData = await EntityToDto(comments, parameters);
+            var shapedDatas = await EntityToDto(comments, parameters);
 
-            return shapedData;
+            return shapedDatas;
         }
 
-        public async Task CreateCommentAsync(CommentDto comment, string token)
+        public async Task CreateCommentAsync(
+            CreateCommentDto comment, 
+            string token)
         {
             var userId = JwtHelper.GetPayloadData(token, "username");
 
             var commentEntity = _mapper.Map<Comment>(comment);
+
             commentEntity.AuthorId = userId;
 
             await _repository.Comment.CreateCommentAsync(commentEntity);
         }
 
-        public async Task UpdateCommentAsync(CommentDto comment, string token)
+        public async Task UpdateCommentAsync(
+            UpdateCommentDto comment, 
+            string token)
         {
             var userId = JwtHelper.GetPayloadData(token, "username");
 
@@ -67,12 +72,15 @@ namespace Unit.Service
             }
 
             var commentEntity = _mapper.Map<Comment>(comment);
+
             commentEntity.AuthorId = userId;
 
             await _repository.Comment.UpdateCommentAsync(commentEntity);
         }
 
-        public async Task DeleteCommentAsync(CommentDto comment, string token)
+        public async Task DeleteCommentAsync(
+            CommentDto comment, 
+            string token)
         {
             var userId = JwtHelper.GetPayloadData(token, "username");
 
@@ -96,13 +104,43 @@ namespace Unit.Service
             await _repository.Comment.DeleteCommentAsync(commentEntity);
         }
 
-        private async Task<(IEnumerable<ExpandoObject> commentsDto, MetaData metadata)> EntityToDto(PagedList<Comment> comments, CommentParameters parameters)
+        public async Task<ExpandoObject> GetCommentByIdAsync(string postId, string commentId)
         {
-            var commentDto = _mapper.Map<IEnumerable<CommentDto>>(comments);
+            var comment = await _repository.Comment.GetCommentByKey(postId, commentId);
 
-            var shapedComments = _commentShaper.ShapeData(commentDto, parameters.Fields);
+            var commentDto = _mapper.Map<CommentDto>(comment);
 
-            return (commentsDto: shapedComments, comments.MetaData);
+            var shapedData = _commentShaper.ShapeData(commentDto, null);
+
+            return shapedData;
         }
+
+        private async Task<(IEnumerable<ExpandoObject> commentsDto, MetaData metaData)> EntityToDto(
+            PagedList<Comment> comments,
+            CommentParameters parameters)
+        {
+            var commentDtos = _mapper.Map<List<CommentDto>>(comments);
+
+            var shapedComments = _commentShaper.ShapeData(commentDtos, parameters.Fields);
+
+            return (commentsDto: shapedComments, metaData: comments.MetaData);
+        }
+
+        public async Task LikeCommentAsync(string postId, string commentId, string token)
+        {
+            var checkedCmt = await _repository.Comment.GetCommentByKey(postId, commentId);
+
+            if (checkedCmt == null)
+            {
+                throw new NotFoundException("Invalid action! Comment not found!");
+            }
+
+            var likeAuthorId = JwtHelper.GetPayloadData(token, "username");
+            var user = await _repository.User.GetUserAsync(likeAuthorId);
+
+            await _repository.Comment.LikeCommentAsync(checkedCmt, likeAuthorId!);
+        }
+
+
     }
 }

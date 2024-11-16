@@ -42,12 +42,12 @@ namespace Unit.Service
         public async Task<ExpandoObject> GetUserByIdAsync(UserParameters parameters, string token, string? id = null)
         {
             var userId = JwtHelper.GetPayloadData(token, "username");
-
             var users = !string.IsNullOrWhiteSpace(id) ? await _repository.User.GetUserAsync(id!) : await _repository.User.GetUserAsync(userId!);
-
             var userDto = _mapper.Map<UserDto>(users);
+
             userDto.NumberOfFollowing = userDto.Following.Count;
             userDto.NumberOfFollwers = userDto.Followers.Count;
+
             if (!string.IsNullOrWhiteSpace(id) && !id.Equals(userId))
             {
                 ConfigUserDto(ref userDto, userId);
@@ -59,7 +59,9 @@ namespace Unit.Service
         }
 
 
-        public async Task<(IEnumerable<ExpandoObject> users, MetaData metaData)> GetUsersAsync(UserParameters parameters, string token)
+        public async Task<(IEnumerable<ExpandoObject> users, MetaData metaData)> GetUsersAsync(
+            UserParameters parameters, 
+            string token)
         {
             var userId = JwtHelper.GetPayloadData(token, "username");
 
@@ -68,7 +70,10 @@ namespace Unit.Service
             return await MappingUserEntityToDto(usersWithMetaData, userId!, parameters.Fields);
         }
 
-        public async Task<(IEnumerable<ExpandoObject> users, MetaData metaData)> GetUsersByIdsAsync(UserParameters parameters, string token, List<string> ids)
+        public async Task<(IEnumerable<ExpandoObject> users, MetaData metaData)> GetUsersByIdsAsync(
+            UserParameters parameters, 
+            string token, 
+            List<string> ids)
         {
             var userId = JwtHelper.GetPayloadData(token, "username");
 
@@ -77,7 +82,10 @@ namespace Unit.Service
             return await MappingUserEntityToDto(usersWithMetaData, userId!, parameters.Fields);
         }
 
-        public async Task UpdateUser(UserInfoDtoForUpdate userDtoForUpdate, string id, string? imagePath = null)
+        public async Task UpdateUser(
+            UserInfoDtoForUpdate userDtoForUpdate, 
+            string id, 
+            string? imagePath = null)
         {
             var userEntity = await _repository.User.GetUserAsync(id);
 
@@ -88,7 +96,10 @@ namespace Unit.Service
 
         }
 
-        private async Task<(IEnumerable<ExpandoObject> users, MetaData metaData)> MappingUserEntityToDto(PagedList<User> users, string userId, string? fields)
+        private async Task<(IEnumerable<ExpandoObject> users, MetaData metaData)> MappingUserEntityToDto(
+            PagedList<User> users, 
+            string userId, 
+            string? fields)
         {
             var usersDto = _mapper.Map<List<UserDto>>(users).Select(u =>
             {
@@ -102,7 +113,8 @@ namespace Unit.Service
             return (users: shapedData, metaData: users.MetaData);
         }
 
-        private void ConfigUserDto(ref UserDto userDto, string userId)
+        private void ConfigUserDto(ref UserDto userDto, 
+            string userId)
         {
             if (userDto.Private == true && !userDto.Followers.Contains(userId))
             {
@@ -117,7 +129,9 @@ namespace Unit.Service
             userDto.ConversationId = null;
         }
 
-        public async Task<string> UploadUserImageAsync(string userId, FileInfo imageFile)
+        public async Task<string> UploadUserImageAsync(
+            string userId, 
+            FileInfo imageFile)
         {
             string fileName = $"users/{userId}/profile-picture.jpg";
 
@@ -130,9 +144,11 @@ namespace Unit.Service
                     Key = fileName,
                     ContentType = "image/png"
                 };
+
                 uploadRequest.Headers.ContentDisposition = "inline";
                 await _s3Client.PutObjectAsync(uploadRequest);
             }
+
             return _s3Config.S3BucketPath + fileName;
         }
     }

@@ -9,16 +9,16 @@ namespace Unit.Entities.Models
         public required string PostId { get; set; }
 
         [DynamoDBRangeKey("comment_id")] // Sort Key
-        public string CommentId { get; set; } = Guid.NewGuid().ToString();
+        public string CommentId { get; set; }
 
         [DynamoDBProperty("attachments")]
         public List<Attachment> Attachments { get; set; } = new();
 
         [DynamoDBProperty("author_id")]
-        public required string AuthorId { get; set; }
+        public string AuthorId { get; set; }
 
         [DynamoDBProperty("content")]
-        public required string Content { get; set; }
+        public string Content { get; set; }
 
         [DynamoDBProperty("created_at")]
         public DateTime CreatedAt { get; set; }

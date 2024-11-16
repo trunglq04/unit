@@ -26,9 +26,9 @@ namespace Unit.API.Controllers
         [Authorize]
         [ServiceFilter(typeof(FileValidationFilter))]
         public async Task<IActionResult> CreatePost(
-        [FromHeader(Name = "Authorization")] string token,
-        [FromForm] PostDtoForCreation post,
-        [FromForm] List<IFormFile>? media)
+            [FromHeader(Name = "Authorization")] string token,
+            [FromForm] PostDtoForCreation post,
+            [FromForm] List<IFormFile>? media)
         {
             var userId = JwtHelper.GetPayloadData(token, "username");
             List<string> mediaPath = new List<string>();
@@ -65,7 +65,6 @@ namespace Unit.API.Controllers
             Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(postWithMetaData.metaData));
 
             return Ok(postWithMetaData.posts);
-
         }
 
     }

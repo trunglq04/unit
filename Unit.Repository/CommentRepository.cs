@@ -1,6 +1,7 @@
 ﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.Model;
+using System.ComponentModel;
 using System.Text;
 using Unit.Entities.Models;
 using Unit.Repository.Contracts;
@@ -13,7 +14,7 @@ namespace Unit.Repository
     {
         public CommentRepository(IDynamoDBContext dynamoDbContext, IAmazonDynamoDB dynamoDbClient) : base(dynamoDbContext, dynamoDbClient) { }
 
-        public async Task<PagedList<Comment>> GetCommentsByPostId(CommentParameters commentParameters, string postId)
+        public async Task<PagedList<Comment>> GetCommentsByPostId(CommentParameters parameters, string postId)
         {
             var filterExpression = new StringBuilder("post_id = :postId");
             var expressionAttributeValues = new Dictionary<string, AttributeValue>
@@ -22,15 +23,14 @@ namespace Unit.Repository
             };
 
             var comments = await FindByConditionAsync(
-                commentParameters,
+                parameters,
                 filterExpression,
-                expressionAttributeValues,
-                null
+                expressionAttributeValues
             );
 
-            var listComments = comments.listEntity.Sort(commentParameters.OrderBy).ToList();
+            var listComments = comments.listEntity.Sort(parameters.OrderBy).ToList();
 
-            return new PagedList<Comment>(listComments, comments.pageKey, commentParameters.Size);
+            return new PagedList<Comment>(listComments, comments.pageKey, parameters.Size);
         }
 
         public async Task CreateCommentAsync(Comment comment) 
@@ -44,9 +44,26 @@ namespace Unit.Repository
         public async Task DeleteCommentAsync(Comment comment)
             => await DeleteAsync(comment.PostId, comment.CommentId);
 
-        public async Task<Comment> GetCommentByKey(string postId, string commentId)
+        public async Task<Comment?> GetCommentByKey(string postId, string commentId)
         {
             return await FindByIdAsync(postId, commentId);
         }
+
+        public async Task LikeCommentAsync(Comment comment, string likeAuthorId)
+        {
+            comment.Metadata.Likes.Add(likeAuthorId);
+
+            await UpdateAsync(new Comment
+            {
+                PostId = comment.PostId,
+                CommentId = comment.CommentId,
+                Metadata = new Metadata
+                {
+                    Likes = comment.Metadata.Likes
+                }
+            });
+        }
+
+
     }
 }
