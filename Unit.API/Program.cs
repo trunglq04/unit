@@ -50,6 +50,7 @@ builder.Services.ConfigureOptions<JwtBearerConfigurationOptions>();
 // Add DataShaper service
 builder.Services.AddScoped<IDataShaper<UserDto>, DataShaper<UserDto>>();
 builder.Services.AddScoped<IDataShaper<CommentDto>, DataShaper<CommentDto>>();
+builder.Services.AddScoped<IDataShaper<ResponseCommentDto>, DataShaper<ResponseCommentDto>>();
 builder.Services.AddScoped<IDataShaper<PostDto>, DataShaper<PostDto>>();
 builder.Services.AddScoped<IDataShaper<ReplyDto>, DataShaper<ReplyDto>>();
 

@@ -12,11 +12,12 @@ namespace Unit.Repository
     public class CommentRepository : RepositoryBase<Comment>, ICommentRepository
     {
         public CommentRepository(IDynamoDBContext dynamoDbContext, IAmazonDynamoDB dynamoDbClient) :
-            base(dynamoDbContext, dynamoDbClient) { }
+            base(dynamoDbContext, dynamoDbClient)
+        { }
 
         public async Task<PagedList<Comment>> GetCommentsByPostId(CommentParameters parameters, string postId)
         {
-            var filterExpression = new StringBuilder("post_id = :postId");
+            var keyExpression = new StringBuilder("post_id = :postId");
             var expressionAttributeValues = new Dictionary<string, AttributeValue>
             {
                 { ":postId", new AttributeValue { S = postId } }
@@ -38,13 +39,13 @@ namespace Unit.Repository
 
         public async Task UpdateCommentAsync(Comment comment)
             => await UpdateAsync(comment);
-        
+
         public async Task DeleteCommentAsync(Comment comment)
             => await DeleteAsync(comment.PostId, comment.CommentId);
 
         public async Task<Comment?> GetCommentByKey(string postId, string commentId)
             => await FindByIdAsync(postId, commentId);
-        
+
         public async Task LikeCommentAsync(Comment comment, string likeAuthorId)
         {
             /* Check if the author already liked the comment then unlike else like the comment 
@@ -54,7 +55,7 @@ namespace Unit.Repository
             if (likeAuthorList.Contains(likeAuthorId))
             {
                 likeAuthorList.Remove(likeAuthorId);
-            }   
+            }
             else
             {
                 likeAuthorList.Add(likeAuthorId);
@@ -63,6 +64,6 @@ namespace Unit.Repository
             comment.Metadata.Likes = likeAuthorList;
 
             await UpdateAsync(comment);
-        }   
+        }
     }
 }
