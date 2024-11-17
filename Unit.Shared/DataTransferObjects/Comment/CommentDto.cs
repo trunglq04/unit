@@ -13,8 +13,6 @@
 
         public DateTime? UpdatedAt { get; set; } = DateTime.Now;
 
-        public string? ParentCommentId { get; set; } // null if this is a top-level comment
-
         public List<AttachmentDto>? Attachments { get; set; } = new();
 
         public List<string>? Mentions { get; set; } = new();

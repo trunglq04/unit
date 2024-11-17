@@ -8,6 +8,7 @@ using Unit.Repository.Contracts;
 using Unit.Service.Contracts;
 using Unit.Service.Helper;
 using Unit.Shared.DataTransferObjects.Comment;
+using Unit.Shared.DataTransferObjects.Reply;
 using Unit.Shared.RequestFeatures;
 
 namespace Unit.Service
@@ -17,14 +18,16 @@ namespace Unit.Service
         private readonly ILoggerManager _logger;
         private readonly IRepositoryManager _repository;
         private readonly IMapper _mapper;
-        private readonly IDataShaper<CommentDto> _commentShaper;
+        private readonly IDataShaper<ResponseCommentDto> _commentShaper;
+        private readonly IDataShaper<ReplyDto> _replyShaper;
 
-        public CommentService(IRepositoryManager repository, ILoggerManager logger, IMapper mapper, IDataShaper<CommentDto> commentShaper)
+        public CommentService(IRepositoryManager repository, ILoggerManager logger, IMapper mapper, IDataShaper<ResponseCommentDto> commentShaper, IDataShaper<ReplyDto> replyShaper)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
             _commentShaper = commentShaper;
+            _replyShaper = replyShaper;
         }
 
         public async Task<(IEnumerable<ExpandoObject> commentsDto, MetaData metaData)> GetCommentsByPostIdAsync(
@@ -32,10 +35,8 @@ namespace Unit.Service
             string postId)
         {
             var comments = await _repository.Comment.GetCommentsByPostId(parameters, postId);
-
-            var shapedDatas = await EntityToDto(comments, parameters);
-
-            return shapedDatas;
+            
+            return await CommentEntityToDto(comments, parameters);
         }
 
         public async Task CreateCommentAsync(
@@ -73,7 +74,10 @@ namespace Unit.Service
 
             var commentEntity = _mapper.Map<Comment>(comment);
 
+            // Updated comment
             commentEntity.AuthorId = userId;
+            commentEntity.CreatedAt = checkedCmt.CreatedAt;
+            commentEntity.Metadata.IsEdited = true;
 
             await _repository.Comment.UpdateCommentAsync(commentEntity);
         }
@@ -102,31 +106,40 @@ namespace Unit.Service
             commentEntity.AuthorId = userId;
 
             await _repository.Comment.DeleteCommentAsync(commentEntity);
+            //
         }
 
         public async Task<ExpandoObject> GetCommentByIdAsync(string postId, string commentId)
         {
             var comment = await _repository.Comment.GetCommentByKey(postId, commentId);
 
-            var commentDto = _mapper.Map<CommentDto>(comment);
+            var commentDto = _mapper.Map<ResponseCommentDto>(comment);
 
             var shapedData = _commentShaper.ShapeData(commentDto, null);
 
             return shapedData;
         }
 
-        private async Task<(IEnumerable<ExpandoObject> commentsDto, MetaData metaData)> EntityToDto(
+        private async Task<(IEnumerable<ExpandoObject> commentsDto, MetaData metaData)> CommentEntityToDto(
             PagedList<Comment> comments,
             CommentParameters parameters)
         {
-            var commentDtos = _mapper.Map<List<CommentDto>>(comments);
+            var commentDtos = _mapper.Map<IEnumerable<ResponseCommentDto>>(comments);
+
+            foreach (var commentDto in commentDtos)
+            {
+                commentDto.LikeCount = commentDto.Metadata?.Likes?.Count;
+            }
 
             var shapedComments = _commentShaper.ShapeData(commentDtos, parameters.Fields);
 
             return (commentsDto: shapedComments, metaData: comments.MetaData);
         }
 
-        public async Task LikeCommentAsync(string postId, string commentId, string token)
+        public async Task LikeCommentAsync(
+            string postId, 
+            string commentId, 
+            string token)
         {
             var checkedCmt = await _repository.Comment.GetCommentByKey(postId, commentId);
 
@@ -141,6 +154,84 @@ namespace Unit.Service
             await _repository.Comment.LikeCommentAsync(checkedCmt, likeAuthorId!);
         }
 
+        public async Task CreateReplyAsync(
+            string postId, 
+            string parentCommentId, 
+            CreateReplyDto replyDto, 
+            string token)
+        {
+            var nestedReply = await _repository.NestedReply.GetNestedReplyAsync(postId, parentCommentId);
 
+            var userId = JwtHelper.GetPayloadData(token, "username");
+
+            if (nestedReply == null)
+            {
+                var newReply = _mapper.Map<Reply>(replyDto);
+                newReply.AuthorId = userId!;
+                nestedReply = new NestedReply
+                {
+                    PostId = postId,
+                    ParentCommentId = parentCommentId,
+                    Replies = new List<Reply> { newReply }
+                };
+                await _repository.NestedReply.CreateNestedReplyAsync(nestedReply);
+            } 
+            else
+            {
+                var newReply = _mapper.Map<Reply>(replyDto);
+                newReply.AuthorId = userId!;
+
+                await _repository.NestedReply.CreateReplyAsync(nestedReply, newReply);
+            }
+        }
+
+        public async Task UpdateReplyAsync(
+            string postId, 
+            string parentCommentId, 
+            UpdateReplyDto replyDto, 
+            string token)
+        {
+            var userId = JwtHelper.GetPayloadData(token, "username");
+            replyDto.AuthorId = userId!;
+            var updatedReply = _mapper.Map<Reply>(replyDto);
+
+            var nestedReply = await _repository.NestedReply.GetNestedReplyAsync(postId, parentCommentId);
+
+            await _repository.NestedReply.UpdateReplyAsync(nestedReply, updatedReply);
+        }
+
+        public async Task DeleteReplyAsync(
+            string postId, 
+            string commentId, 
+            UpdateReplyDto replyDto, 
+            string token)
+        {
+            var userId = JwtHelper.GetPayloadData(token, "username");
+            replyDto.AuthorId = userId!;
+            var reply = _mapper.Map<Reply>(replyDto);
+
+            var nestedReply = await _repository.NestedReply.GetNestedReplyAsync(postId, commentId);
+
+            await _repository.NestedReply.DeleteReplyAsync(nestedReply, reply);
+        }
+
+        public async Task<IEnumerable<ExpandoObject>> GetRepliesByCommentIdAsync(
+            string postId, 
+            string parentCommentId)
+        {
+            var replies = await _repository.NestedReply.GetRepliesAsync(postId, parentCommentId);
+
+            return await ReplyEntityToDto(replies);
+        }
+
+        private async Task<IEnumerable<ExpandoObject>> ReplyEntityToDto(
+            IEnumerable<Reply> replies)
+        {
+            var repliesDto = _mapper.Map<IEnumerable<ReplyDto>>(replies);
+
+            var shapedReplies = _replyShaper.ShapeData(repliesDto, null);
+
+            return shapedReplies;
+        }
     }
 }

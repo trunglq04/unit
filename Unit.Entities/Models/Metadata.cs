@@ -8,9 +8,6 @@ namespace Unit.Entities.Models
         public bool IsEdited { get; set; } = false;
 
         [DynamoDBProperty("likes")]
-        public List<string> Likes { get; set; } = new(); // store like user ids
-
-        [DynamoDBProperty("replies")]
-        public int Replies { get; set; }
+        public List<string> Likes { get; set; } = new();  // store like user ids
     }
 }

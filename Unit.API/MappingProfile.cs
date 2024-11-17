@@ -4,9 +4,10 @@ using System.Collections.Generic;
 using Unit.Entities.Models;
 using Unit.Shared.DataTransferObjects.Authentication;
 using Unit.Shared.DataTransferObjects.Comment;
+using Unit.Shared.DataTransferObjects.NestedReply;
 using Unit.Shared.DataTransferObjects.Post;
+using Unit.Shared.DataTransferObjects.Reply;
 using Unit.Shared.DataTransferObjects.User;
-using Unit.Shared.RequestFeatures;
 
 namespace Unit.API
 {
@@ -34,6 +35,15 @@ namespace Unit.API
             CreateMap<Attachment, AttachmentDto>();
             CreateMap<AttachmentDto, Attachment>();
             CreateMap<Attachment, AttachmentDto>();
+
+            // reply
+            CreateMap<CreateNestedReplyDto, NestedReply>();
+            CreateMap<NestedReplyDto, NestedReply>();
+
+            CreateMap<Reply, ReplyDto>();
+            CreateMap<ReplyDto, Reply>();
+            CreateMap<CreateReplyDto, Reply>();
+            CreateMap<UpdateReplyDto, Reply>();
         }
     }
 }

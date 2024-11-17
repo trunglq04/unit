@@ -5,5 +5,6 @@
         IUserRepository User { get; }
         ICommentRepository Comment { get; }
         IPostRepository Post { get; }
+        INestedReplyRepository NestedReply { get; }
     }
 }

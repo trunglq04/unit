@@ -9,5 +9,6 @@
         IAuthenticationService AuthenticationService { get; }
 
         ICommentService CommentService { get; }
+
     }
 }

@@ -9,7 +9,9 @@ using Unit.Repository.Contracts;
 using Unit.Service;
 using Unit.Service.Contracts;
 using Unit.Shared.DataTransferObjects.Comment;
+using Unit.Shared.DataTransferObjects.NestedReply;
 using Unit.Shared.DataTransferObjects.Post;
+using Unit.Shared.DataTransferObjects.Reply;
 using Unit.Shared.DataTransferObjects.User;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -42,9 +44,13 @@ builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer();
 builder.Services.ConfigureOptions<JwtBearerConfigurationOptions>();
+
+// Add DataShaper service
 builder.Services.AddScoped<IDataShaper<UserDto>, DataShaper<UserDto>>();
 builder.Services.AddScoped<IDataShaper<CommentDto>, DataShaper<CommentDto>>();
 builder.Services.AddScoped<IDataShaper<PostDto>, DataShaper<PostDto>>();
+builder.Services.AddScoped<IDataShaper<ReplyDto>, DataShaper<ReplyDto>>();
+
 builder.Services.AddControllers();
 
 // Build the app

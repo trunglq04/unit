@@ -4,6 +4,7 @@ using System.Text.Json;
 using Unit.API.ActionFilter;
 using Unit.Service.Contracts;
 using Unit.Shared.DataTransferObjects.Comment;
+using Unit.Shared.DataTransferObjects.Reply;
 using Unit.Shared.RequestFeatures;
 
 namespace Unit.API.Controllers
@@ -111,5 +112,55 @@ namespace Unit.API.Controllers
             return Ok();
         }
 
+        [HttpPost("comment/{parentCommentId}/reply")]
+        [Authorize]
+        public async Task<IActionResult> ReplyComment(
+            [FromHeader(Name = "Authorization")] string token,
+            [FromBody] CreateReplyDto reply,
+            string postId,
+            string parentCommentId)
+        {
+            await _service.CommentService.CreateReplyAsync(postId, parentCommentId, reply, token);
+
+            return Ok();
+        }
+
+        [HttpPut("comment/{parentCommentId}/reply/{replyId}")]
+        [Authorize]
+        public async Task<IActionResult> UpdateReply(
+            [FromHeader(Name = "Authorization")] string token,
+            [FromBody] UpdateReplyDto reply,
+            string postId,
+            string parentCommentId,
+            string replyId)
+        {
+            await _service.CommentService.UpdateReplyAsync(postId, parentCommentId, reply, token);
+
+            return Ok();
+        }
+
+        [HttpDelete("comment/{parentCommentId}/reply/{replyId}")]
+        [Authorize]
+        public async Task<IActionResult> DeleteReply(
+            [FromHeader(Name = "Authorization")] string token,
+            [FromBody] UpdateReplyDto reply,
+            string postId,
+            string parentCommentId,
+            string replyId)
+        {
+
+            await _service.CommentService.DeleteReplyAsync(postId, parentCommentId, reply, token);
+
+            return Ok();
+        }
+
+        [HttpGet("comment/{parentCommentId}/replies")]
+        public async Task<IActionResult> GetRepliesByCommentId(
+            string postId,
+            string parentCommentId)
+        {
+            var replies = await _service.CommentService.GetRepliesByCommentIdAsync(postId, parentCommentId);
+            return Ok(replies);
+        }
     }
 }
