@@ -9,11 +9,7 @@ namespace Unit.Repository.Contracts
         Task CreateCommentAsync(Comment comment);
         Task UpdateCommentAsync(Comment comment);
         Task DeleteCommentAsync(Comment comment);
-
         Task<Comment> GetCommentByKey(string postId, string commentId);
-
-        //Task DeleteReplyAsync(Comment comment, string replyId);
-
         Task LikeCommentAsync(Comment comment, string likeAuthorId);
     }
 }

@@ -8,6 +8,8 @@
 
         IPostRepository Post { get; }
 
+        INestedReplyRepository NestedReply { get; }
+
         IPostLikeListsRepository PostLikeLists { get; }
     }
 }

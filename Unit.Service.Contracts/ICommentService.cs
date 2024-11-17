@@ -1,5 +1,6 @@
 ﻿using System.Dynamic;
 using Unit.Shared.DataTransferObjects.Comment;
+using Unit.Shared.DataTransferObjects.Reply;
 using Unit.Shared.RequestFeatures;
 
 namespace Unit.Service.Contracts
@@ -18,5 +19,9 @@ namespace Unit.Service.Contracts
 
         Task LikeCommentAsync(string postId, string commentId, string token);
 
+        Task CreateReplyAsync(string postId, string parentCommentId, CreateReplyDto replyDto, string token);
+        Task UpdateReplyAsync(string postId, string parentCommentId, UpdateReplyDto replyDto, string token);
+        Task DeleteReplyAsync(string postId, string parentCommentId, UpdateReplyDto replyDto, string token);
+        Task<IEnumerable<ExpandoObject>> GetRepliesByCommentIdAsync(string postId, string parentCommentId);
     }
 }

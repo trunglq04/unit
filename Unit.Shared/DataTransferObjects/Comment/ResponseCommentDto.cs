@@ -1,18 +1,23 @@
 ﻿namespace Unit.Shared.DataTransferObjects.Comment
 {
-    public class CreateCommentDto
+    public class ResponseCommentDto
     {
+        public string? AuthorId { get; set; }
         public string? PostId { get; set; }
 
-        public string? CommentId { get; set; } = Guid.NewGuid().ToString();         // auto-generate
+        public string? CommentId { get; set; }        // auto-generate
 
-        public required string Content { get; set; } = string.Empty;
+        public required string Content { get; set; }
 
         public DateTime? CreatedAt { get; set; } = DateTime.Now;
+
+        public DateTime? UpdatedAt { get; set; } = DateTime.Now;
 
         public List<AttachmentDto>? Attachments { get; set; } = new();
 
         public List<string>? Mentions { get; set; } = new();
+
+        public int? LikeCount { get; set; } = 0;
 
         public MetadataDto? Metadata { get; set; } = new()
         {

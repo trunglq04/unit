@@ -5,17 +5,17 @@ namespace Unit.Entities.Models
     [DynamoDBTable("Comments")]
     public class Comment
     {
+        [DynamoDBProperty("author_id")]
+        public string AuthorId { get; set; }
+
         [DynamoDBHashKey("post_id")] // Partition Key
         public required string PostId { get; set; }
 
         [DynamoDBRangeKey("comment_id")] // Sort Key
-        public string CommentId { get; set; }
+        public required string CommentId { get; set; }
 
         [DynamoDBProperty("attachments")]
         public List<Attachment> Attachments { get; set; } = new();
-
-        [DynamoDBProperty("author_id")]
-        public string AuthorId { get; set; }
 
         [DynamoDBProperty("content")]
         public string Content { get; set; }
@@ -34,8 +34,5 @@ namespace Unit.Entities.Models
 
         [DynamoDBProperty("tags")]
         public List<string> Tags { get; set; } = new();
-
-        [DynamoDBProperty("parent_comment_id")]
-        public string? ParentCommentId { get; set; }            // null if this is a top-level comment
     }
 }
