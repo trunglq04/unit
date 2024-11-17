@@ -229,6 +229,9 @@ namespace Unit.Service
         {
             var list = await _repository.PostLikeLists.GetPostLikedListsAsync(request);
 
+            if (list == null || !list.Any())
+                throw new NotFoundException(PostExMsg.PostNotHaveAnyLike);
+
             return (list, list.MetaData);
         }
     }
