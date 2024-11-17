@@ -1,7 +1,6 @@
 ﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.Model;
-using System.ComponentModel;
 using System.Text;
 using Unit.Entities.Models;
 using Unit.Repository.Contracts;
@@ -24,7 +23,7 @@ namespace Unit.Repository
 
             var comments = await FindByConditionAsync(
                 parameters,
-                filterExpression,
+                keyExpression,
                 expressionAttributeValues
             );
 

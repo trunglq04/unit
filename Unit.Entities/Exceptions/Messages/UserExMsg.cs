@@ -12,5 +12,7 @@
         public const string MaximumVideoDuration = "Video length must not exceed 5 minutes.";
         public const string WrongPostFormatImage = "Only photo (JPEG, PNG, GIF) and video (MP4, MPEG) uploads are allowed.";
         public const string UserHasBeenDisable = "User have been deactivated.";
+        public const string AlreadyLikedPost = "You had liked this post already";
+        public const string AlreadyUnLikedPost = "You had unliked this post already";
     }
 }

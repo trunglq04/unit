@@ -91,7 +91,9 @@ namespace Unit.Repository
             return new PagedList<User>(listUser, users.pageKey, userParameters.Size);
         }
 
-        public async Task CreateUserAsync(User user)
-            => await CreateAsync(user);
+        public async Task UpdateUserAsync(User user)
+        {
+            await UpdateAsync(user);
+        }
     }
 }
