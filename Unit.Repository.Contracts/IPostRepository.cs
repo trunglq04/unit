@@ -7,7 +7,7 @@ namespace Unit.Repository.Contracts
     {
         Task CreatePostAsync(Post post);
 
-        Task UpdateUserAsync(Post post);
+        Task UpdatePostAsync(Post post);
 
         Task<PagedList<Post>> GetPosts(PostParameters request, List<string>? userFollowing = null);
 

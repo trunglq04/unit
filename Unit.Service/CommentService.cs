@@ -3,6 +3,7 @@ using AutoMapper;
 using System.Dynamic;
 using System.Xml.Linq;
 using Unit.Entities.Exceptions;
+using Unit.Entities.Exceptions.Messages;
 using Unit.Entities.Models;
 using Unit.Repository.Contracts;
 using Unit.Service.Contracts;
@@ -31,29 +32,44 @@ namespace Unit.Service
         }
 
         public async Task<(IEnumerable<ExpandoObject> commentsDto, MetaData metaData)> GetCommentsByPostIdAsync(
-            CommentParameters parameters, 
+            CommentParameters parameters,
             string postId)
         {
             var comments = await _repository.Comment.GetCommentsByPostId(parameters, postId);
-            
+
             return await CommentEntityToDto(comments, parameters);
         }
 
         public async Task CreateCommentAsync(
-            CreateCommentDto comment, 
+            CreateCommentDto comment,
             string token)
         {
             var userId = JwtHelper.GetPayloadData(token, "username");
 
+            var user = await _repository.User.GetUserAsync(userId!);
+
+            var post = (await _repository.Post.GetPosts(new()
+            {
+                PostId = comment.PostId,
+                UserId = userId,
+            }, user.Following)).FirstOrDefault();
+
+            if (post == null)
+                throw new NotFoundException(PostExMsg.PostNotFound);
+
             var commentEntity = _mapper.Map<Comment>(comment);
 
-            commentEntity.AuthorId = userId;
+            commentEntity.AuthorId = userId!;
 
             await _repository.Comment.CreateCommentAsync(commentEntity);
+
+            post.CommentCount++;
+
+            await _repository.Post.UpdatePostAsync(post);
         }
 
         public async Task UpdateCommentAsync(
-            UpdateCommentDto comment, 
+            UpdateCommentDto comment,
             string token)
         {
             var userId = JwtHelper.GetPayloadData(token, "username");
@@ -83,7 +99,7 @@ namespace Unit.Service
         }
 
         public async Task DeleteCommentAsync(
-            CommentDto comment, 
+            CommentDto comment,
             string token)
         {
             var userId = JwtHelper.GetPayloadData(token, "username");
@@ -140,8 +156,8 @@ namespace Unit.Service
         }
 
         public async Task LikeCommentAsync(
-            string postId, 
-            string commentId, 
+            string postId,
+            string commentId,
             string token)
         {
             var checkedCmt = await _repository.Comment.GetCommentByKey(postId, commentId);
@@ -158,9 +174,9 @@ namespace Unit.Service
         }
 
         public async Task CreateReplyAsync(
-            string postId, 
-            string parentCommentId, 
-            CreateReplyDto replyDto, 
+            string postId,
+            string parentCommentId,
+            CreateReplyDto replyDto,
             string token)
         {
             var nestedReply = await _repository.NestedReply.GetNestedReplyAsync(postId, parentCommentId);
@@ -178,7 +194,7 @@ namespace Unit.Service
                     Replies = new List<Reply> { newReply }
                 };
                 await _repository.NestedReply.CreateNestedReplyAsync(nestedReply);
-            } 
+            }
             else
             {
                 var newReply = _mapper.Map<Reply>(replyDto);
@@ -189,9 +205,9 @@ namespace Unit.Service
         }
 
         public async Task UpdateReplyAsync(
-            string postId, 
-            string parentCommentId, 
-            UpdateReplyDto replyDto, 
+            string postId,
+            string parentCommentId,
+            UpdateReplyDto replyDto,
             string token)
         {
             var userId = JwtHelper.GetPayloadData(token, "username");
@@ -224,7 +240,7 @@ namespace Unit.Service
         }
 
         public async Task<IEnumerable<ExpandoObject>> GetRepliesByCommentIdAsync(
-            string postId, 
+            string postId,
             string parentCommentId)
         {
             var replies = await _repository.NestedReply.GetRepliesAsync(postId, parentCommentId);

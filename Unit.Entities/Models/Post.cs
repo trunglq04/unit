@@ -42,8 +42,5 @@ namespace Unit.Entities.Models
 
         [DynamoDBProperty("comment_count")]
         public int CommentCount { get; set; }
-
-        [DynamoDBProperty("reactions")]
-        public List<Interaction> Reactions { get; set; } = new();
     }
 }

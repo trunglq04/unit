@@ -1,6 +1,4 @@
-﻿using Microsoft.VisualBasic;
-
-namespace Unit.Shared.DataTransferObjects.Post
+﻿namespace Unit.Shared.DataTransferObjects.Post
 {
     public class PostDto
     {
@@ -12,7 +10,9 @@ namespace Unit.Shared.DataTransferObjects.Post
 
         public required string PostId { get; set; }
 
-        public string Content { get; set; }
+        public required string Content { get; set; }
+
+        public bool IsLiked { get; set; } = false;
 
         public List<string> Media { get; set; } = new();
 
@@ -25,7 +25,5 @@ namespace Unit.Shared.DataTransferObjects.Post
         public int LikeCount { get; set; }
 
         public int CommentCount { get; set; }
-
-        public List<Interaction> Reactions { get; set; } = new();
     }
 }
