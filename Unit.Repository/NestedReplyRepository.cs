@@ -46,13 +46,13 @@ namespace Unit.Repository
             await UpdateNestedReplyAsync(nestedReply);
         }
 
-        public async Task DeleteReplyAsync(NestedReply nestedReply, Reply reply)
+        public async Task DeleteReplyAsync(NestedReply nestedReply, Reply deletedReply)
         {
             var replies = nestedReply.Replies;
 
             foreach (var r in replies)
             {
-                if (r.ReplyId == reply.ReplyId && r.AuthorId == reply.AuthorId)
+                if (r.ReplyId == deletedReply.ReplyId && r.AuthorId == deletedReply.AuthorId)
                 {
                     replies.Remove(r);
                     nestedReply.Replies = replies;

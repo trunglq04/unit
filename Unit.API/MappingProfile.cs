@@ -30,6 +30,7 @@ namespace Unit.API
             CreateMap<CommentDto, Comment>();
             CreateMap<CreateCommentDto, Comment>();
             CreateMap<UpdateCommentDto, Comment>();
+            CreateMap<Comment, ResponseCommentDto>();
             CreateMap<Metadata, MetadataDto>();
             CreateMap<MetadataDto, Metadata>();
             CreateMap<Attachment, AttachmentDto>();

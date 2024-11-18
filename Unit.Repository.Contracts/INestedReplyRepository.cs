@@ -14,7 +14,7 @@ namespace Unit.Repository.Contracts
         Task<IEnumerable<Reply>?> GetRepliesAsync(string postId, string parentCommentId); 
         Task<Reply> GetReplyAsync(string postId, string parentCommentId, string replyId);
         Task CreateReplyAsync(NestedReply nestedReply, Reply reply);
-        Task DeleteReplyAsync(NestedReply nestedReply, Reply reply);
+        Task DeleteReplyAsync(NestedReply nestedReply, Reply deletedReply);
         Task UpdateReplyAsync(NestedReply nestedReply, Reply updatedReply);
     }
 }

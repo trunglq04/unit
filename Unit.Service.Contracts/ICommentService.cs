@@ -21,7 +21,7 @@ namespace Unit.Service.Contracts
 
         Task CreateReplyAsync(string postId, string parentCommentId, CreateReplyDto replyDto, string token);
         Task UpdateReplyAsync(string postId, string parentCommentId, UpdateReplyDto replyDto, string token);
-        Task DeleteReplyAsync(string postId, string parentCommentId, UpdateReplyDto replyDto, string token);
+        Task DeleteReplyAsync(string postId, string parentCommentId, string replyId, string token);
         Task<IEnumerable<ExpandoObject>> GetRepliesByCommentIdAsync(string postId, string parentCommentId);
     }
 }

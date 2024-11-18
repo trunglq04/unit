@@ -2,7 +2,7 @@
 {
     public class CreateReplyDto
     {
-        public required string ReplyId { get; set; } = new Guid().ToString();
+        public string? ReplyId { get; set; } = Guid.NewGuid().ToString();
         public required string Content { get; set; }
     }
 }

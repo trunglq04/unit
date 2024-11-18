@@ -99,7 +99,6 @@ namespace Unit.API.Controllers
             }
         }
 
-
         [HttpPut("comment/{commentId}/like")]
         [Authorize]
         public async Task<IActionResult> LikeComment(
@@ -134,6 +133,7 @@ namespace Unit.API.Controllers
             string parentCommentId,
             string replyId)
         {
+            reply.ReplyId = replyId;
             await _service.CommentService.UpdateReplyAsync(postId, parentCommentId, reply, token);
 
             return Ok();
@@ -143,13 +143,12 @@ namespace Unit.API.Controllers
         [Authorize]
         public async Task<IActionResult> DeleteReply(
             [FromHeader(Name = "Authorization")] string token,
-            [FromBody] UpdateReplyDto reply,
             string postId,
             string parentCommentId,
             string replyId)
         {
 
-            await _service.CommentService.DeleteReplyAsync(postId, parentCommentId, reply, token);
+            await _service.CommentService.DeleteReplyAsync(postId, parentCommentId, replyId, token);
 
             return Ok();
         }
