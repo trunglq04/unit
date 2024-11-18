@@ -49,7 +49,7 @@ builder.Services.ConfigureOptions<JwtBearerConfigurationOptions>();
 builder.Services.AddScoped<IDataShaper<UserDto>, DataShaper<UserDto>>();
 builder.Services.AddScoped<IDataShaper<ResponseCommentDto>, DataShaper<ResponseCommentDto>>();
 builder.Services.AddScoped<IDataShaper<PostDto>, DataShaper<PostDto>>();
-builder.Services.AddScoped<IDataShaper<ReplyDto>, DataShaper<ReplyDto>>();
+builder.Services.AddScoped<IDataShaper<ResponseReplyDto>, DataShaper<ResponseReplyDto>>();
 
 builder.Services.AddControllers();
 

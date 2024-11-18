@@ -3,6 +3,8 @@
     public class ResponseCommentDto
     {
         public string? AuthorId { get; set; }
+        public string? AuthorUserName { get; set; }
+        public string? AuthorProfilePicture { get; set; }
         public string? PostId { get; set; }
 
         public string? CommentId { get; set; }        // auto-generate

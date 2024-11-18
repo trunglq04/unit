@@ -42,6 +42,7 @@ namespace Unit.API
             CreateMap<NestedReplyDto, NestedReply>();
 
             CreateMap<Reply, ReplyDto>();
+            CreateMap<Reply, ResponseReplyDto>();
             CreateMap<ReplyDto, Reply>();
             CreateMap<CreateReplyDto, Reply>();
             CreateMap<UpdateReplyDto, Reply>();
