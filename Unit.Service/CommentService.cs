@@ -20,9 +20,9 @@ namespace Unit.Service
         private readonly IRepositoryManager _repository;
         private readonly IMapper _mapper;
         private readonly IDataShaper<ResponseCommentDto> _commentShaper;
-        private readonly IDataShaper<ReplyDto> _replyShaper;
+        private readonly IDataShaper<ResponseReplyDto> _replyShaper;
 
-        public CommentService(IRepositoryManager repository, ILoggerManager logger, IMapper mapper, IDataShaper<ResponseCommentDto> commentShaper, IDataShaper<ReplyDto> replyShaper)
+        public CommentService(IRepositoryManager repository, ILoggerManager logger, IMapper mapper, IDataShaper<ResponseCommentDto> commentShaper, IDataShaper<ResponseReplyDto> replyShaper)
         {
             _repository = repository;
             _logger = logger;
@@ -143,8 +143,11 @@ namespace Unit.Service
             var commentDtos = _mapper.Map<IEnumerable<ResponseCommentDto>>(comments);
 
             foreach (var commentDto in commentDtos)
-            {
+            {   
+                var author = await _repository.User.GetUserAsync(commentDto.AuthorId);
                 commentDto.LikeCount = commentDto.Metadata?.Likes?.Count;
+                commentDto.AuthorUserName = author.UserName;
+                commentDto.AuthorProfilePicture = author.ProfilePicture;
             }
 
             var shapedComments = _commentShaper.ShapeData(commentDtos, parameters.Fields);
@@ -248,7 +251,14 @@ namespace Unit.Service
         private async Task<IEnumerable<ExpandoObject>> ReplyEntityToDto(
             IEnumerable<Reply> replies)
         {
-            var repliesDto = _mapper.Map<IEnumerable<ReplyDto>>(replies);
+            var repliesDto = _mapper.Map<IEnumerable<ResponseReplyDto>>(replies);
+
+            foreach (var replyDto in repliesDto)
+            {
+                var author = await _repository.User.GetUserAsync(replyDto.AuthorId);
+                replyDto.AuthorUserName = author.UserName;
+                replyDto.AuthorProfilePicture = author.ProfilePicture;
+            }
 
             var shapedReplies = _replyShaper.ShapeData(repliesDto, null);
 

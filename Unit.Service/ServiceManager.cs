@@ -28,7 +28,7 @@ namespace Unit.Service
             IDataShaper<UserDto> userShaper,
             IDataShaper<PostDto> postShaper,
             IDataShaper<ResponseCommentDto> commentShaper,
-            IDataShaper<ReplyDto> replyShaper,
+            IDataShaper<ResponseReplyDto> replyShaper,
             IAmazonS3 s3Client)
         {
             _userService = new Lazy<IUserService>(() => new UserService(repositoryManager, logger, mapper, userShaper, s3Client, configuration));
