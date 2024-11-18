@@ -203,16 +203,21 @@ namespace Unit.Service
         public async Task DeleteReplyAsync(
             string postId, 
             string commentId, 
-            UpdateReplyDto replyDto, 
+            string replyId, 
             string token)
         {
             var userId = JwtHelper.GetPayloadData(token, "username");
-            replyDto.AuthorId = userId!;
-            var reply = _mapper.Map<Reply>(replyDto);
 
             var nestedReply = await _repository.NestedReply.GetNestedReplyAsync(postId, commentId);
 
-            await _repository.NestedReply.DeleteReplyAsync(nestedReply, reply);
+            if (nestedReply == null)
+            {
+                throw new NotFoundException("Invalid action! Reply not found!");
+            }
+
+            var deletedReply = new Reply { ReplyId = replyId, AuthorId = userId!, Content="" };
+
+            await _repository.NestedReply.DeleteReplyAsync(nestedReply, deletedReply);
         }
 
         public async Task<IEnumerable<ExpandoObject>> GetRepliesByCommentIdAsync(

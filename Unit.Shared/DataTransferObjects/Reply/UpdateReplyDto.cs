@@ -3,7 +3,7 @@
     public class UpdateReplyDto
     {
         public string? AuthorId { get; set; }
-        public required string ReplyId { get; set; }
+        public string? ReplyId { get; set; }
         public required string Content { get; set; }
     }
 }
