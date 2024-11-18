@@ -2,6 +2,7 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using AutoMapper;
 using Microsoft.Extensions.Options;
+using System.Collections.Generic;
 using Unit.Entities.ConfigurationModels;
 using Unit.Entities.Exceptions;
 using Unit.Entities.Exceptions.Messages;
@@ -63,40 +64,120 @@ namespace Unit.Service
         public async Task<(IEnumerable<PostDto> posts, MetaData metaData)> GetPosts(PostParameters request, string token)
         {
             var userId = JwtHelper.GetPayloadData(token, "username");
-
+            PagedList<Post> postsEntity;
+            IEnumerable<PostDto> postDto;
             if (!string.IsNullOrWhiteSpace(request.UserId) && !request.UserId.Equals(userId))
             {
                 var user = await _repository.User.GetUserAsync(request.UserId!);
 
                 if (user.Private && user.Followers.Any() && !user.Followers.Contains(userId!)) throw new BadRequestException(UserExMsg.DoNotHavePermissionToView);
                 request.IsHidden = false;
-
-                var postsEntity = await _repository.Post.GetPostsByUserId(request);
-
-                var postsDto = _mapper.Map<List<PostDto>>(postsEntity);
-
-                return (posts: postsDto, metaData: postsEntity.MetaData);
             }
             else if ((request.MyPost != null && (bool)request.MyPost) || (!string.IsNullOrWhiteSpace(request.UserId) && request.UserId.Equals(userId)))
             {
                 request.UserId = userId;
-                var postsEntity = await _repository.Post.GetPostsByUserId(request);
-
-                var postsDto = _mapper.Map<List<PostDto>>(postsEntity);
-
-                return (posts: postsDto, metaData: postsEntity.MetaData);
             }
             else
             {
                 var user = await _repository.User.GetUserAsync(userId!);
 
                 request.UserId = userId;
-                var postsEntity = await _repository.Post.GetPosts(request, user.Following);
 
-                var postsDto = _mapper.Map<List<PostDto>>(postsEntity);
+                postsEntity = await _repository.Post.GetPosts(request, user.Following);
+                postDto = await MapPostsWithLikeStatus(postsEntity, userId!);
+                return (postDto, postsEntity.MetaData);
 
-                return (posts: postsDto, metaData: postsEntity.MetaData);
             }
+
+            postsEntity = await _repository.Post.GetPostsByUserId(request);
+            postDto = await MapPostsWithLikeStatus(postsEntity, userId!);
+            return (postDto, postsEntity.MetaData);
+
+        }
+        private async Task<IEnumerable<PostDto>> MapPostsWithLikeStatus(PagedList<Post> postsEntity, string userId)
+        {
+            return await Task.WhenAll(
+                _mapper.Map<List<PostDto>>(postsEntity)
+                    .Select(async p =>
+                    {
+                        p.IsLiked = await _repository.PostLikeLists.IsLikedPost(p.PostId, userId);
+                        return p;
+                    })
+            );
+        }
+
+
+
+        public async Task UpdatePost(string postId, PostDtoForUpdate post, string token, bool comment = false)
+        {
+            var userId = JwtHelper.GetPayloadData(token, "username");
+
+            var postList = await _repository.Post.GetPostsByUserId(new()
+            {
+                PostId = postId,
+                UserId = post.UserId
+            });
+
+
+            if (postList == null || !postList.Any())
+                throw new NotFoundException(PostExMsg.PostNotFound);
+
+            var postEntity = postList.FirstOrDefault()!;
+
+            if (!post.UserId.Equals(userId))
+            {
+                var user = await _repository.User.GetUserAsync(post.UserId);
+
+                if ((user.Private && !user.Followers.Contains(userId!)) || (post.Hidden != null && (bool)post.Hidden) || (post.Content != null && !string.IsNullOrWhiteSpace(post.Content)))
+                    throw new BadRequestException(UserExMsg.DoNotHavePermissionToView);
+            }
+
+            if (userId!.Equals(post.UserId))
+            {
+                postEntity.IsHidden = post.Hidden ?? postEntity.IsHidden;
+                if (post.Content != null && !string.IsNullOrWhiteSpace(post.Content))
+                {
+                    postEntity.Content = post.Content;
+                    postEntity.LastModified = DateTime.UtcNow;
+                }
+            }
+
+            var isLiked = await _repository.PostLikeLists.IsLikedPost(postId, userId);
+
+            if (post.Like != null && (bool)post.Like && isLiked)
+            {
+                throw new BadRequestException(UserExMsg.AlreadyLikedPost);
+            }
+            else if (post.Like != null && !(bool)post.Like && !isLiked)
+            {
+                throw new BadRequestException(UserExMsg.AlreadyUnLikedPost);
+            }
+
+            if (post.Like != null && (bool)post.Like && !isLiked)
+            {
+                await _repository.PostLikeLists.CreatePostLikeListAsync(
+                new()
+                {
+                    PostId = postId,
+                    UserId = userId
+                });
+                postEntity.LikeCount++;
+            }
+            else if (post.Like != null && !(bool)post.Like && isLiked)
+            {
+                await _repository.PostLikeLists.RemovePostLikeListAsync(
+                    new()
+                    {
+                        PostId = postId,
+                        UserId = userId
+                    });
+                postEntity.LikeCount--;
+            }
+
+            if (comment) postEntity.CommentCount++;
+
+            await _repository.Post.UpdatePostAsync(postEntity);
+
         }
 
         public async Task<string> UploadMediaPostAsync(string userId, Stream fileStream, string fileExtension)
@@ -142,6 +223,16 @@ namespace Unit.Service
 
                 _ => "application/octet-stream",
             };
+        }
+
+        public async Task<(IEnumerable<PostLikeList> postLikeLists, MetaData metaData)> GetListLikedPost(PostParameters request)
+        {
+            var list = await _repository.PostLikeLists.GetPostLikedListsAsync(request);
+
+            if (list == null || !list.Any())
+                throw new NotFoundException(PostExMsg.PostNotHaveAnyLike);
+
+            return (list, list.MetaData);
         }
     }
 }

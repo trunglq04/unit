@@ -92,6 +92,8 @@ namespace Unit.Repository
         }    
 
         public async Task UpdateUserAsync(User user)
-            => await CreateAsync(user);
+        {
+            await UpdateAsync(user);
+        }
     }
 }

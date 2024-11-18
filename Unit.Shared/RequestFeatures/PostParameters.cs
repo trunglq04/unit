@@ -10,5 +10,7 @@
 
         public bool? MyPost { get; set; }
 
+        public bool? LikeList { get; set; }
+
     }
 }

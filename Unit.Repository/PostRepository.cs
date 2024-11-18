@@ -60,6 +60,12 @@ namespace Unit.Repository
                 expressionAttributeValues[":isNotPrivate"] = new AttributeValue { N = "0" };
             }
 
+            if (request.PostId != null && !string.IsNullOrWhiteSpace(request.PostId))
+            {
+                filterExpression.Append(" AND post_id = :postId");
+                expressionAttributeValues[":postId"] = new AttributeValue() { S = request.PostId };
+            }
+
 
             var posts = await FindByConditionAsync(
                 request,
@@ -112,7 +118,7 @@ namespace Unit.Repository
             return new PagedList<Post>(listPosts, posts.pageKey, request.Size);
         }
 
-        public async Task UpdateUserAsync(Post post)
-         => await UpdateUserAsync(post);
+        public async Task UpdatePostAsync(Post post)
+         => await UpdateAsync(post);
     }
 }

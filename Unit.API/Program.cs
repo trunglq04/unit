@@ -38,6 +38,8 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 
 builder.Services.AddScoped<ValidationFilterAttribute>();
 builder.Services.AddScoped<ValidationFilterPasswordConfirmation>();
+builder.Services.AddScoped<FileValidationFilter>();
+builder.Services.AddScoped<ImageFileValidationFilter>();
 
 builder.Services.AddAuthorization();
 builder.Services

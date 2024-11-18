@@ -33,6 +33,6 @@ namespace Unit.Entities.Models
         public DateTime LastModified { get; set; }
 
         [DynamoDBProperty("reactions")]
-        public List<Interaction> Reactions { get; set; } = new(); // List of reactions on the message
+        public List<string> Reactions { get; set; } = new(); // List of reactions on the message
     }
 }
