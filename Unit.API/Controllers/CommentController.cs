@@ -22,7 +22,7 @@ namespace Unit.API.Controllers
         }
 
         [HttpGet("comments")]
-        public async Task<IActionResult> GetCommentsByPostId([FromQuery] CommentParameters? commentParameters, string postId)
+        public async Task<IActionResult> GetCommentsByPostId([FromQuery] CommentParameters commentParameters, string postId)
         {
             var comments = await _service.CommentService.GetCommentsByPostIdAsync(commentParameters, postId);
 
