@@ -6,13 +6,6 @@ using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Unit.Shared.RequestFeatures;
-using Unit.Repository.Extensions;
-using System.Text;
-using Amazon.DynamoDBv2.Model;
-using System.Reflection;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using Unit.Shared.RequestFeatures;
 using System.Text;
 
 namespace Unit.Repository
@@ -68,28 +61,30 @@ namespace Unit.Repository
         }
 
 
-
         public async Task<List<T>> FindAllAsync()
             => await _dynamoDbContext.ScanAsync<T>(new List<ScanCondition>()).GetRemainingAsync();
 
 
         public async Task<(IEnumerable<T> listEntity, string pageKey)> FindByConditionAsync(
-            RequestParameters request,
+            RequestParameters requestParameters,
             StringBuilder keyConditionExpression,
             StringBuilder? filterExpression = null,
             Dictionary<string, AttributeValue>? expressionAttributeValues = null)
         {
-            var exlusiveStartKey = string.IsNullOrWhiteSpace(request.Page) ? null : JsonSerializer.Deserialize<Dictionary<string, AttributeValue>>(Convert.FromBase64String(request.Page));
+            var exlusiveStartKey = string.IsNullOrWhiteSpace(requestParameters.Page) ? 
+                null 
+                : 
+                JsonSerializer.Deserialize<Dictionary<string, AttributeValue>>(Convert.FromBase64String(requestParameters.Page));
 
             var queryRequest = new QueryRequest
             {
                 TableName = GetTableName(),
-                Limit = request.Size,
+                Limit = requestParameters.Size,
                 ExclusiveStartKey = exlusiveStartKey,
                 KeyConditionExpression = keyConditionExpression.ToString(),
                 FilterExpression = filterExpression?.ToString(),
                 ExpressionAttributeValues = expressionAttributeValues,
-                ProjectionExpression = FieldsBuilder(request.Fields),
+                ProjectionExpression = FieldsBuilder(requestParameters.Fields),
             };
 
             var response = await _dynamoDbClient.QueryAsync(queryRequest);
@@ -105,24 +100,27 @@ namespace Unit.Repository
                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
             }));
 
-            return (items, nextPageKey);
+            return (listEntity: items, pageKey: nextPageKey);
         }
 
         public async Task<(IEnumerable<T> listEntity, string pageKey)> FindByConditionAsync(
-            RequestParameters request,
+            RequestParameters requestParameters,
             StringBuilder? filterExpression = null,
             Dictionary<string, AttributeValue>? expressionAttributeValues = null)
         {
-            var exlusiveStartKey = string.IsNullOrWhiteSpace(request.Page) ? null : JsonSerializer.Deserialize<Dictionary<string, AttributeValue>>(Convert.FromBase64String(request.Page));
+            var exclusiveStartKey = string.IsNullOrWhiteSpace(requestParameters.Page)? 
+                null 
+                :
+                JsonSerializer.Deserialize<Dictionary<string, AttributeValue>>(Convert.FromBase64String(requestParameters.Page));
 
             var scanRequest = new ScanRequest
             {
                 TableName = GetTableName(),
-                Limit = request.Size,
-                ExclusiveStartKey = exlusiveStartKey,
+                Limit = requestParameters.Size,
+                ExclusiveStartKey = exclusiveStartKey,
                 FilterExpression = filterExpression?.ToString(),
                 ExpressionAttributeValues = expressionAttributeValues,
-                ProjectionExpression = FieldsBuilder(request.Fields),
+                ProjectionExpression = FieldsBuilder(requestParameters.Fields),
             };
 
             var response = await _dynamoDbClient.ScanAsync(scanRequest);
@@ -138,7 +136,7 @@ namespace Unit.Repository
                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
             }));
 
-            return (items, nextPageKey);
+            return (listEntity: items, pageKey: nextPageKey);
         }
 
         public async Task<T> FindByIdAsync(object partitionKey)

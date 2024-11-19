@@ -32,7 +32,7 @@ namespace Unit.Service
         }
 
         public async Task<(IEnumerable<ExpandoObject> commentsDto, MetaData metaData)> GetCommentsByPostIdAsync(
-            CommentParameters parameters,
+            CommentParameters? parameters,
             string postId)
         {
             var comments = await _repository.Comment.GetCommentsByPostId(parameters, postId);
@@ -48,11 +48,16 @@ namespace Unit.Service
 
             var user = await _repository.User.GetUserAsync(userId!);
 
-            var post = (await _repository.Post.GetPosts(new()
+            var updatePost = new PostParameters()
             {
                 PostId = comment.PostId,
-                UserId = userId,
-            }, user.Following)).FirstOrDefault();
+                UserId = "",
+            };
+
+            var post = (await _repository.Post.GetPosts(
+                request: updatePost, 
+                userFollowing: user.Following))
+                    .FirstOrDefault();
 
             if (post == null)
                 throw new NotFoundException(PostExMsg.PostNotFound);
@@ -128,6 +133,11 @@ namespace Unit.Service
         public async Task<ExpandoObject> GetCommentByIdAsync(string postId, string commentId)
         {
             var comment = await _repository.Comment.GetCommentByKey(postId, commentId);
+
+            if (comment == null)
+            {
+                throw new NotFoundException("Comment not found!");
+            }
 
             var commentDto = _mapper.Map<ResponseCommentDto>(comment);
 
