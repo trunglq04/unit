@@ -17,17 +17,22 @@ namespace Unit.Repository
 
         public async Task<PagedList<Comment>> GetCommentsByPostId(CommentParameters parameters, string postId)
         {
-            var keyExpression = new StringBuilder("post_id = :postId");
+            var filterExpression = new StringBuilder("post_id = :postId");
+
             var expressionAttributeValues = new Dictionary<string, AttributeValue>
             {
                 { ":postId", new AttributeValue { S = postId } }
             };
 
             var comments = await FindByConditionAsync(
-                parameters,
-                keyExpression,
-                expressionAttributeValues
+                requestParameters: parameters,
+                filterExpression: filterExpression,
+                keyConditionExpression: null,
+                //null,
+                expressionAttributeValues: expressionAttributeValues
             );
+
+            //var comments = await FindByIdAsync(postId);
 
             var listComments = comments.listEntity.Sort(parameters.OrderBy).ToList();
 
