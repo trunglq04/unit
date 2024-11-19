@@ -26,9 +26,8 @@ namespace Unit.Repository
 
             var comments = await FindByConditionAsync(
                 requestParameters: parameters,
-                filterExpression: filterExpression,
-                keyConditionExpression: null,
-                //null,
+                filterExpression: null,
+                keyConditionExpression: filterExpression,               
                 expressionAttributeValues: expressionAttributeValues
             );
 
