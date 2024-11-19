@@ -3,6 +3,7 @@
     public static class UserExMsg
     {
         public const string UserIsNotExist = "User is not exist.";
+        public const string UserIsUnActive = "User is not active.";
         public const string DoNotHavePermissionToView = "Seem like you dont have permission to do this.";
         public const string DoNotHave = "Seem like you dont have any";
         public const string WrongFormatImage = "The file must be a JPEG, PNG or GIF image format.";

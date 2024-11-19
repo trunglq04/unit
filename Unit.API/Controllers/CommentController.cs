@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using Unit.API.ActionFilter;
+using Unit.Entities.ErrorModel;
 using Unit.Service.Contracts;
 using Unit.Shared.DataTransferObjects.Comment;
 using Unit.Shared.DataTransferObjects.Reply;
@@ -30,7 +31,7 @@ namespace Unit.API.Controllers
             {
                 Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(comments.metaData));
                 return Ok(comments.commentsDto);
-            } 
+            }
             else
             {
                 return NotFound();
@@ -53,8 +54,8 @@ namespace Unit.API.Controllers
         [HttpPut("comment/{commentId}")]
         [Authorize]
         public async Task<IActionResult> UpdateComment(
-            [FromHeader(Name = "Authorization")] string token, 
-            [FromBody] UpdateCommentDto comment, 
+            [FromHeader(Name = "Authorization")] string token,
+            [FromBody] UpdateCommentDto comment,
             string postId,
             string commentId)
         {
@@ -70,8 +71,14 @@ namespace Unit.API.Controllers
         public async Task<IActionResult> DeleteComment(
             [FromHeader(Name = "Authorization")] string token,
             string postId,
-            string commentId)
+            string commentId, [FromQuery] string postAuthorId)
         {
+            if (string.IsNullOrWhiteSpace(postAuthorId))
+                return new BadRequestObjectResult(new ErrorDetails()
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    Message = "Post aurthor is null"
+                });
             var comment = new CommentDto
             {
                 CommentId = commentId,
@@ -79,7 +86,7 @@ namespace Unit.API.Controllers
                 Content = string.Empty,
             };
 
-            await _service.CommentService.DeleteCommentAsync(comment, token);
+            await _service.CommentService.DeleteCommentAsync(comment, token, postAuthorId);
 
             return Ok();
         }

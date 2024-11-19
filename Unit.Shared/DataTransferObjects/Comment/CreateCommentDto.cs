@@ -1,8 +1,13 @@
-﻿namespace Unit.Shared.DataTransferObjects.Comment
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Unit.Shared.DataTransferObjects.Comment
 {
     public class CreateCommentDto
     {
         public string? PostId { get; set; }
+
+        [Required]
+        public required string UserId { get; set; }
 
         public string? CommentId { get; set; } = Guid.NewGuid().ToString();         // auto-generate
 

@@ -46,21 +46,26 @@ namespace Unit.Service
         {
             var userId = JwtHelper.GetPayloadData(token, "username");
 
-            var user = await _repository.User.GetUserAsync(userId!);
+            //user chủ bài viết
+            var userFromPost = await _repository.User.GetUserAsync(comment.UserId);
+
+            if (!userFromPost.Active)
+                throw new BadRequestException(UserExMsg.UserIsUnActive);
+
+            if (userFromPost.Private && !userFromPost.Followers.Contains(userId!))
+                throw new BadRequestException(UserExMsg.DoNotHavePermissionToView);
 
             var updatePost = new PostParameters()
             {
                 PostId = comment.PostId,
-                UserId = "",
+                UserId = comment.UserId,
             };
 
-            var post = (await _repository.Post.GetPosts(
-                request: updatePost, 
-                userFollowing: user.Following))
-                    .FirstOrDefault();
+            var post = (await _repository.Post.GetPostsByUserId(request: updatePost)).FirstOrDefault();
 
             if (post == null)
-                throw new NotFoundException(PostExMsg.PostNotFound);
+                throw new BadRequestException(PostExMsg.PostNotFound);
+
 
             var commentEntity = _mapper.Map<Comment>(comment);
 
@@ -105,7 +110,7 @@ namespace Unit.Service
 
         public async Task DeleteCommentAsync(
             CommentDto comment,
-            string token)
+            string token, string postAuthorId)
         {
             var userId = JwtHelper.GetPayloadData(token, "username");
 
@@ -123,11 +128,35 @@ namespace Unit.Service
                 throw new ForbiddenException("You are not allowed to update this comment!");
             }
 
+            //user chủ bài viết
+            var userFromPost = await _repository.User.GetUserAsync(postAuthorId);
+
+            if (!userFromPost.Active)
+                throw new BadRequestException(UserExMsg.UserIsUnActive);
+
+            if (userFromPost.Private && !userFromPost.Followers.Contains(userId!))
+                throw new BadRequestException(UserExMsg.DoNotHavePermissionToView);
+
+            var updatePost = new PostParameters()
+            {
+                PostId = comment.PostId,
+                UserId = postAuthorId,
+            };
+
+            var post = (await _repository.Post.GetPostsByUserId(request: updatePost)).FirstOrDefault();
+
+            if (post == null)
+                throw new BadRequestException(PostExMsg.PostNotFound);
+
             var commentEntity = _mapper.Map<Comment>(comment);
             commentEntity.AuthorId = userId;
 
             await _repository.Comment.DeleteCommentAsync(commentEntity);
-            //
+
+            post.CommentCount--;
+
+            await _repository.Post.UpdatePostAsync(post);
+
         }
 
         public async Task<ExpandoObject> GetCommentByIdAsync(string postId, string commentId)
@@ -153,7 +182,7 @@ namespace Unit.Service
             var commentDtos = _mapper.Map<IEnumerable<ResponseCommentDto>>(comments);
 
             foreach (var commentDto in commentDtos)
-            {   
+            {
                 var author = await _repository.User.GetUserAsync(commentDto.AuthorId);
                 commentDto.LikeCount = commentDto.Metadata?.Likes?.Count;
                 commentDto.AuthorUserName = author.UserName;
@@ -230,9 +259,9 @@ namespace Unit.Service
         }
 
         public async Task DeleteReplyAsync(
-            string postId, 
-            string commentId, 
-            string replyId, 
+            string postId,
+            string commentId,
+            string replyId,
             string token)
         {
             var userId = JwtHelper.GetPayloadData(token, "username");
@@ -244,7 +273,7 @@ namespace Unit.Service
                 throw new NotFoundException("Invalid action! Reply not found!");
             }
 
-            var deletedReply = new Reply { ReplyId = replyId, AuthorId = userId!, Content="" };
+            var deletedReply = new Reply { ReplyId = replyId, AuthorId = userId!, Content = "" };
 
             await _repository.NestedReply.DeleteReplyAsync(nestedReply, deletedReply);
         }

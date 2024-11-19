@@ -17,7 +17,8 @@
 
         public List<string>? Mentions { get; set; } = new();
 
-        public MetadataDto? Metadata { get; set; } = new() {
+        public MetadataDto? Metadata { get; set; } = new()
+        {
             IsEdited = false,
             Likes = new(),
             Replies = 0

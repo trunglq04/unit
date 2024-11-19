@@ -5,7 +5,7 @@ using Unit.Shared.RequestFeatures;
 
 namespace Unit.Service.Contracts
 {
-    public interface ICommentService 
+    public interface ICommentService
     {
         Task<(IEnumerable<ExpandoObject> commentsDto, MetaData metaData)> GetCommentsByPostIdAsync(CommentParameters parameters, string postId);
 
@@ -13,7 +13,7 @@ namespace Unit.Service.Contracts
 
         Task UpdateCommentAsync(UpdateCommentDto comment, string token);
 
-        Task DeleteCommentAsync(CommentDto comment, string token);
+        Task DeleteCommentAsync(CommentDto comment, string token, string postAuthorId);
 
         Task<ExpandoObject> GetCommentByIdAsync(string postId, string commentId);
 

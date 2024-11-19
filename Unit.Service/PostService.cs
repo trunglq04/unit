@@ -142,36 +142,42 @@ namespace Unit.Service
                 }
             }
 
-            var isLiked = await _repository.PostLikeLists.IsLikedPost(postId, userId);
-
-            if (post.Like != null && (bool)post.Like && isLiked)
+            if (post.Like != null)
             {
-                throw new BadRequestException(UserExMsg.AlreadyLikedPost);
-            }
-            else if (post.Like != null && !(bool)post.Like && !isLiked)
-            {
-                throw new BadRequestException(UserExMsg.AlreadyUnLikedPost);
-            }
-
-            if (post.Like != null && (bool)post.Like && !isLiked)
-            {
-                await _repository.PostLikeLists.CreatePostLikeListAsync(
-                new()
+                var isLiked = await _repository.PostLikeLists.IsLikedPost(postId, userId).ConfigureAwait(false);
+                if ((bool)post.Like && isLiked)
                 {
-                    PostId = postId,
-                    UserId = userId
-                });
-                postEntity.LikeCount++;
-            }
-            else if (post.Like != null && !(bool)post.Like && isLiked)
-            {
-                await _repository.PostLikeLists.RemovePostLikeListAsync(
+                    throw new BadRequestException(UserExMsg.AlreadyLikedPost);
+                }
+                else if (!(bool)post.Like && !isLiked)
+                {
+                    throw new BadRequestException(UserExMsg.AlreadyUnLikedPost);
+                }
+
+                if ((bool)post.Like && !isLiked)
+                {
+                    await _repository.PostLikeLists.CreatePostLikeListAsync(
                     new()
                     {
                         PostId = postId,
                         UserId = userId
                     });
-                postEntity.LikeCount--;
+
+                }
+                else if (!(bool)post.Like && isLiked)
+                {
+                    await _repository.PostLikeLists.RemovePostLikeListAsync(
+                        new()
+                        {
+                            PostId = postId,
+                            UserId = userId
+                        });
+
+                }
+                postEntity.LikeCount = (await _repository.PostLikeLists.GetPostLikedListsAsync(new()
+                {
+                    PostId = postId
+                })).Count();
             }
 
             if (comment) postEntity.CommentCount++;
