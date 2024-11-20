@@ -162,7 +162,7 @@ namespace Unit.Service
                         PostId = postId,
                         UserId = userId
                     });
-
+                    postEntity.LikeCount += 1;
                 }
                 else if (!(bool)post.Like && isLiked)
                 {
@@ -173,11 +173,8 @@ namespace Unit.Service
                             UserId = userId
                         });
 
+                    postEntity.LikeCount -= 1;
                 }
-                postEntity.LikeCount = (await _repository.PostLikeLists.GetPostLikedListsAsync(new()
-                {
-                    PostId = postId
-                })).Count();
             }
 
             if (comment) postEntity.CommentCount++;

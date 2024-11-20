@@ -6,6 +6,8 @@
 
         private int _size = 10;
 
+        public int PageNumber { get; set; } = 1;
+
         public int Size
         {
             get

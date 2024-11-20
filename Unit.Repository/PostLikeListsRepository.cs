@@ -37,8 +37,9 @@ namespace Unit.Repository
                 expressionAttributeValues
                 );
 
-            return new PagedList<PostLikeList>(postLikeList.listEntity.ToList(), postLikeList.pageKey, request.Size);
+            return new PagedList<PostLikeList>(postLikeList.listEntity.ToList(), postLikeList.pageKey, request.Size, request.PageNumber);
         }
+
 
         public async Task<bool> IsLikedPost(string postId, string userId)
             => (await FindByIdAsync(postId, userId) != null);
