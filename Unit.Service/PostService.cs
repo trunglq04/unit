@@ -70,7 +70,8 @@ namespace Unit.Service
             {
                 var user = await _repository.User.GetUserAsync(request.UserId!);
 
-                if (user.Private && user.Followers.Any() && !user.Followers.Contains(userId!)) throw new BadRequestException(UserExMsg.DoNotHavePermissionToView);
+                if (user.Private && ((user.Followers.Any() && !user.Followers.Contains(userId!)) || !user.Followers.Any()))
+                    throw new BadRequestException(UserExMsg.DoNotHavePermissionToView);
                 request.IsHidden = false;
             }
             else if ((request.MyPost != null && (bool)request.MyPost) || (!string.IsNullOrWhiteSpace(request.UserId) && request.UserId.Equals(userId)))
