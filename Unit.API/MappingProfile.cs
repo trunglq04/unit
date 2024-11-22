@@ -18,6 +18,7 @@ namespace Unit.API
             // user
             CreateMap<AuthenticationResultType, TokenDtoResponse>();
             CreateMap<User, UserDto>();
+            CreateMap<FollowRequest, FollowRequestDto>();
             CreateMap<UserInfoDtoForUpdate, User>()
             .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 

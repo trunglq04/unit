@@ -9,11 +9,5 @@ namespace Unit.Entities.Models
 
         [DynamoDBProperty("create_at")]
         public DateTime CreatedAt { get; set; }
-
-        [DynamoDBProperty("last_modified")]
-        public DateTime LastModified { get; set; }
-
-        [DynamoDBProperty("status")]
-        public required string Status { get; set; } = "pending"; // "pending", "accepted", "rejected", "canceled"
     }
 }

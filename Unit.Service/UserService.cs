@@ -51,6 +51,19 @@ namespace Unit.Service
             {
                 ConfigUserDto(ref userDto, userId);
             }
+            else
+            {
+                foreach (var followRequest in userDto.FollowRequests)
+                {
+                    var userInFollowRequest = await _repository.User.GetUserAsync(followRequest.FollowerId);
+                    if (userInFollowRequest != null)
+                    {
+                        followRequest.PictureProfile = userInFollowRequest.ProfilePicture;
+                        followRequest.UserName = userInFollowRequest.UserName;
+                    }
+                }
+
+            }
 
             var shapedData = _userShaper.ShapeData(userDto, parameters.Fields);
 
@@ -88,11 +101,124 @@ namespace Unit.Service
         {
             var userEntity = await _repository.User.GetUserAsync(id);
 
+            await UpdatePostOfUser(userDtoForUpdate, id, imagePath);
+
+            await UpdateFollowingOfUser(userDtoForUpdate, id, userEntity);
+
+            await UpdateFollowerOfUser(userDtoForUpdate, id, userEntity);
+
             _mapper.Map(userDtoForUpdate, userEntity);
-            if (!string.IsNullOrWhiteSpace(imagePath)) userEntity.ProfilePicture = imagePath;
+
+            if (!string.IsNullOrWhiteSpace(imagePath))
+                userEntity.ProfilePicture = imagePath;
+
             userEntity.LastModified = DateTime.UtcNow;
+            if (userEntity.Followers != null && userEntity.Followers.Count == 0) userEntity.Followers = null;
+            if (userEntity.Following != null && userEntity.Following.Count == 0) userEntity.Following = null;
             await _repository.User.UpdateUserAsync(userEntity);
 
+        }
+
+        private async Task UpdatePostOfUser(UserInfoDtoForUpdate userDtoForUpdate, string id, string? imagePath)
+        {
+            if (userDtoForUpdate.Private != null || !string.IsNullOrWhiteSpace(userDtoForUpdate.UserName) || !string.IsNullOrWhiteSpace(imagePath))
+            {
+                var listPost = await _repository.Post.GetPostsByUserId(new()
+                {
+                    UserId = id
+                });
+
+                foreach (var post in listPost)
+                {
+                    post.IsPrivate = userDtoForUpdate.Private ?? post.IsPrivate;
+                    post.UserName = userDtoForUpdate.UserName ?? post.UserName;
+                    post.ProfilePicture = imagePath ?? post.ProfilePicture;
+                    await _repository.Post.UpdatePostAsync(post);
+                }
+            }
+        }
+
+        private async Task UpdateFollowerOfUser(UserInfoDtoForUpdate userDtoForUpdate, string id, User userEntity)
+        {
+            if (string.IsNullOrWhiteSpace(userDtoForUpdate.Follower))
+                return;
+
+            if (userDtoForUpdate.Follower.Equals(id)) return;
+
+            var userFollower = await _repository.User.GetUserAsync(userDtoForUpdate.Follower);
+
+            if (userFollower == null)
+                return;
+
+            if (userEntity.Followers.Contains(userDtoForUpdate.Follower))
+            {
+                userFollower.Following.Remove(id);
+                if (userFollower.Following.Count == 0) userFollower.Following = null;
+                await _repository.User.UpdateUserAsync(userFollower);
+
+                userEntity.Followers.Remove(userDtoForUpdate.Follower);
+            }
+            else if (userDtoForUpdate.IsAcceptFollower != null && userEntity.FollowRequests.Any(followRequest => followRequest.FollowerId.Equals(userDtoForUpdate.Follower)))
+            {
+                if ((bool)userDtoForUpdate.IsAcceptFollower)
+                {
+                    var indexOfFollowRequest = userEntity.FollowRequests.FindIndex(0, 1, (followRequest => followRequest.FollowerId.Equals(userDtoForUpdate.Follower)));
+                    if (indexOfFollowRequest >= 0)
+                        userEntity.FollowRequests.RemoveAt(indexOfFollowRequest);
+
+                    userFollower.Following.Add(id);
+                    userEntity.Followers.Add(userFollower.UserId);
+                }
+                else
+                {
+                    var indexOfFollowRequest = userEntity.FollowRequests.FindIndex(0, 1, (followRequest => followRequest.FollowerId.Equals(id)));
+                    if (indexOfFollowRequest >= 0)
+                        userEntity.FollowRequests.RemoveAt(indexOfFollowRequest);
+                }
+            }
+            await _repository.User.UpdateUserAsync(userFollower);
+        }
+
+        private async Task UpdateFollowingOfUser(UserInfoDtoForUpdate userDtoForUpdate, string id, User userEntity)
+        {
+            if (string.IsNullOrWhiteSpace(userDtoForUpdate.Follow))
+                return;
+
+            if (userDtoForUpdate.Follow.Equals(id))
+                return;
+
+            var userFollowing = await _repository.User.GetUserAsync(userDtoForUpdate.Follow);
+            if (userFollowing == null) return;
+
+            if (userEntity.Following.Contains(userDtoForUpdate.Follow))
+            {
+                userFollowing.Followers.Remove(id);
+                userEntity.Following.Remove(userDtoForUpdate.Follow);
+            }
+            else
+            {
+                if (!userFollowing.Private)
+                {
+                    userFollowing.Followers.Add(id);
+                    userEntity.Following.Add(userDtoForUpdate.Follow);
+                }
+                else
+                {
+                    var isSendFollowRequest = userFollowing.FollowRequests.Any(followRequest => followRequest.FollowerId.Equals(id));
+                    if (isSendFollowRequest)
+                    {
+                        var indexOfFollowRequest = userFollowing.FollowRequests.FindIndex(0, 1, (followRequest => followRequest.FollowerId.Equals(id)));
+                        if (indexOfFollowRequest >= 0)
+                            userFollowing.FollowRequests.RemoveAt(indexOfFollowRequest);
+                    }
+                    else
+                    {
+                        userFollowing.FollowRequests.Add(new() { FollowerId = id, CreatedAt = DateTime.UtcNow });
+                    }
+                }
+            }
+            if (userFollowing.Followers.Count == 0) userFollowing.Followers = null;
+            await _repository.User.UpdateUserAsync(userFollowing);
         }
 
         private async Task<(IEnumerable<ExpandoObject> users, MetaData metaData)> MappingUserEntityToDto(
