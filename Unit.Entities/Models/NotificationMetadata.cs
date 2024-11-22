@@ -8,6 +8,10 @@ namespace Unit.Entities.Models
         [DynamoDBProperty("latest_action_user_id")]
         public string? LastestActionUserId { get; set; }
 
+        // Id của comment bài post
+        [DynamoDBProperty("object_id")]
+        public string? ObjectId { get; set; }
+
         // Tổng số lần hành động này được thực hiện: số like.
         [DynamoDBProperty("action_count")]
         public int? ActionCount { get; set; }   // comment count or like count

@@ -5,7 +5,7 @@ namespace Unit.Entities.Models
     [DynamoDBTable("Notifications")]
     public class Notification
     {
-        [DynamoDBHashKey]
+        [DynamoDBHashKey("owner_id")]
         // Id của chủ sở hữu phần bài viêt/ bình luận bị tác động
         public string OwnerId { get; set; }
 
