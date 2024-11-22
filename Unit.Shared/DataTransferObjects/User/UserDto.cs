@@ -35,5 +35,7 @@
         public DateTime? LastModified { get; set; }
 
         public List<FollowRequestDto>? FollowRequests { get; set; }
+
+        public bool? isFollowed { get; set; } = false;
     }
 }

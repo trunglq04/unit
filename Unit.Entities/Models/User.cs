@@ -24,16 +24,16 @@ namespace Unit.Entities.Models
         public string? Bio { get; set; }
 
         [DynamoDBProperty("followers")]
-        public List<string> Followers { get; set; } = new();
+        public List<string>? Followers { get; set; } = new();
 
         [DynamoDBProperty("following")]
-        public List<string> Following { get; set; } = new();
+        public List<string>? Following { get; set; } = new();
 
         [DynamoDBProperty("blocked_users")]
-        public List<string> BlockedUsers { get; set; } = new List<string>();
+        public List<string>? BlockedUsers { get; set; } = new List<string>();
 
         [DynamoDBProperty("conversation_id")]
-        public List<string> ConversationId { get; set; } = new List<string>();
+        public List<string>? ConversationId { get; set; } = new List<string>();
 
         [DynamoDBProperty("active")]
         public bool Active { get; set; } // e.g., "active", "inactive"

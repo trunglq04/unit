@@ -12,5 +12,11 @@
 
         public bool? Private { get; init; } // "public" or "private"
 
+        public bool? IsAcceptFollower { get; init; }
+
+        public string? Follower { get; init; } //remove followers
+
+        public string? Follow { get; init; } // follow or  remove following 
+
     }
 }
