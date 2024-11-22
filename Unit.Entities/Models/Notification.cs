@@ -16,8 +16,8 @@ namespace Unit.Entities.Models
         [DynamoDBProperty("affected_object_id")]
         // Id của phần bị tác động: id của bài viết hoặc id của bình luận
         public string? AffectedObjectId { get; set; }  // For getting Post Content
-        
-        [DynamoDBProperty("created_at")]        
+
+        [DynamoDBRangeKey("created_at")]
         public DateTime CreatedAt { get; set; }
 
         [DynamoDBProperty("metadata")]
