@@ -5,6 +5,7 @@ using Unit.Entities.Models;
 using Unit.Shared.DataTransferObjects.Authentication;
 using Unit.Shared.DataTransferObjects.Comment;
 using Unit.Shared.DataTransferObjects.NestedReply;
+using Unit.Shared.DataTransferObjects.Notification;
 using Unit.Shared.DataTransferObjects.Post;
 using Unit.Shared.DataTransferObjects.Reply;
 using Unit.Shared.DataTransferObjects.User;
@@ -47,6 +48,10 @@ namespace Unit.API
             CreateMap<ReplyDto, Reply>();
             CreateMap<CreateReplyDto, Reply>();
             CreateMap<UpdateReplyDto, Reply>();
+
+            //notification
+            CreateMap<Notification, NotificationDto>();
+            CreateMap<NotificationMetadata, NotificationMetadataDto>();
         }
     }
 }

@@ -18,6 +18,7 @@ namespace Unit.Service
         private readonly Lazy<IAuthenticationService> _authenticationService;
         private readonly Lazy<IPostService> _postService;
         private readonly Lazy<ICommentService> _commentService;
+        private readonly Lazy<INotificationService> _notificationService;
 
         public ServiceManager(
             IRepositoryManager repositoryManager,
@@ -35,11 +36,13 @@ namespace Unit.Service
             _authenticationService = new Lazy<IAuthenticationService>(() => new AuthenticationService(repositoryManager, logger, mapper, cognitoProvider, configuration));
             _postService = new Lazy<IPostService>(() => new PostService(repositoryManager, logger, mapper, postShaper, s3Client, configuration));
             _commentService = new Lazy<ICommentService>(() => new CommentService(repositoryManager, logger, mapper, commentShaper, replyShaper));
+            _notificationService = new Lazy<INotificationService>(() => new NotificationService(repositoryManager, logger, mapper));
         }
 
         public IUserService UserService => _userService.Value;
         public IAuthenticationService AuthenticationService => _authenticationService.Value;
         public IPostService PostService => _postService.Value;
         public ICommentService CommentService => _commentService.Value;
+        public INotificationService NotificationService => _notificationService.Value;
     }
 }

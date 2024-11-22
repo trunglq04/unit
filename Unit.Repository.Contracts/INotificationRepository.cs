@@ -1,4 +1,5 @@
 ﻿using Unit.Entities.Models;
+using Unit.Shared.RequestFeatures;
 
 namespace Unit.Repository.Contracts
 {
@@ -9,5 +10,7 @@ namespace Unit.Repository.Contracts
         Task DeleteNotification(string ownerId, string createdAt);
 
         Task UpdateNotification(Notification notification);
+
+        Task<PagedList<Notification>> GetAllNotificationsOfUser(RequestParameters request, string userId);
     }
 }

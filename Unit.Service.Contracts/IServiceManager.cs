@@ -10,5 +10,6 @@
 
         ICommentService CommentService { get; }
 
+        INotificationService NotificationService { get; }
     }
 }
