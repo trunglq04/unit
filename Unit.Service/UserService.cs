@@ -100,12 +100,6 @@ namespace Unit.Service
             string? imagePath = null)
         {
             var userEntity = await _repository.User.GetUserAsync(id);
-            if (userDtoForUpdate.Private != null || !string.IsNullOrWhiteSpace(userDtoForUpdate.UserName) || !string.IsNullOrWhiteSpace(imagePath))
-            {
-                var listPost = await _repository.Post.GetPostsByUserId(new()
-                {
-                    UserId = id
-                });
 
             await UpdatePostOfUser(userDtoForUpdate, id, imagePath);
 
