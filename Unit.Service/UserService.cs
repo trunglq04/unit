@@ -247,7 +247,7 @@ namespace Unit.Service
                 userDto.Followers = null;
                 userDto.Following = null;
             }
-            if (userDto.Followers.Contains(userId)) userDto.isFollowed = true;
+            if (userDto.Followers != null && userDto.Followers.Contains(userId)) userDto.isFollowed = true;
             userDto.PhoneNumber = null;
             userDto.BlockedUsers = null;
             userDto.DateOfBirth = null;
