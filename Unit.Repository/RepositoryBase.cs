@@ -71,15 +71,14 @@ namespace Unit.Repository
             StringBuilder? filterExpression = null,
             Dictionary<string, AttributeValue>? expressionAttributeValues = null)
         {
-            var exlusiveStartKey = string.IsNullOrWhiteSpace(requestParameters.Page) ? 
-                null 
-                : 
+            var exlusiveStartKey = string.IsNullOrWhiteSpace(requestParameters.Page) ?
+                null
+                :
                 JsonSerializer.Deserialize<Dictionary<string, AttributeValue>>(Convert.FromBase64String(requestParameters.Page));
 
             var queryRequest = new QueryRequest
             {
                 TableName = GetTableName(),
-                Limit = requestParameters.Size,
                 ExclusiveStartKey = exlusiveStartKey,
                 KeyConditionExpression = keyConditionExpression.ToString(),
                 FilterExpression = filterExpression?.ToString(),
@@ -108,15 +107,14 @@ namespace Unit.Repository
             StringBuilder? filterExpression = null,
             Dictionary<string, AttributeValue>? expressionAttributeValues = null)
         {
-            var exclusiveStartKey = string.IsNullOrWhiteSpace(requestParameters.Page)? 
-                null 
+            var exclusiveStartKey = string.IsNullOrWhiteSpace(requestParameters.Page) ?
+                null
                 :
                 JsonSerializer.Deserialize<Dictionary<string, AttributeValue>>(Convert.FromBase64String(requestParameters.Page));
 
             var scanRequest = new ScanRequest
             {
                 TableName = GetTableName(),
-                Limit = requestParameters.Size,
                 ExclusiveStartKey = exclusiveStartKey,
                 FilterExpression = filterExpression?.ToString(),
                 ExpressionAttributeValues = expressionAttributeValues,

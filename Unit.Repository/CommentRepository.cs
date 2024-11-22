@@ -27,15 +27,15 @@ namespace Unit.Repository
             var comments = await FindByConditionAsync(
                 requestParameters: parameters,
                 filterExpression: null,
-                keyConditionExpression: filterExpression,               
+                keyConditionExpression: filterExpression,
                 expressionAttributeValues: expressionAttributeValues
             );
 
             //var comments = await FindByIdAsync(postId);
 
-            var listComments = comments.listEntity.Sort(parameters.OrderBy).ToList();
+            var listComments = comments.listEntity.Sort(parameters.OrderBy).Skip((parameters.PageNumber - 1) * parameters.Size).Take(parameters.Size).ToList();
 
-            return new PagedList<Comment>(listComments, comments.pageKey, parameters.Size);
+            return new PagedList<Comment>(listComments, comments.pageKey, parameters.Size, parameters.PageNumber);
         }
 
         public async Task CreateCommentAsync(Comment comment)

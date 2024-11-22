@@ -72,7 +72,7 @@ namespace Unit.Service
 
 
         public async Task<(IEnumerable<ExpandoObject> users, MetaData metaData)> GetUsersAsync(
-            UserParameters parameters, 
+            UserParameters parameters,
             string token)
         {
             var userId = JwtHelper.GetPayloadData(token, "username");
@@ -83,8 +83,8 @@ namespace Unit.Service
         }
 
         public async Task<(IEnumerable<ExpandoObject> users, MetaData metaData)> GetUsersByIdsAsync(
-            UserParameters parameters, 
-            string token, 
+            UserParameters parameters,
+            string token,
             List<string> ids)
         {
             var userId = JwtHelper.GetPayloadData(token, "username");
@@ -95,11 +95,17 @@ namespace Unit.Service
         }
 
         public async Task UpdateUser(
-            UserInfoDtoForUpdate userDtoForUpdate, 
-            string id, 
+            UserInfoDtoForUpdate userDtoForUpdate,
+            string id,
             string? imagePath = null)
         {
             var userEntity = await _repository.User.GetUserAsync(id);
+            if (userDtoForUpdate.Private != null || !string.IsNullOrWhiteSpace(userDtoForUpdate.UserName) || !string.IsNullOrWhiteSpace(imagePath))
+            {
+                var listPost = await _repository.Post.GetPostsByUserId(new()
+                {
+                    UserId = id
+                });
 
             await UpdatePostOfUser(userDtoForUpdate, id, imagePath);
 
@@ -222,8 +228,8 @@ namespace Unit.Service
         }
 
         private async Task<(IEnumerable<ExpandoObject> users, MetaData metaData)> MappingUserEntityToDto(
-            PagedList<User> users, 
-            string userId, 
+            PagedList<User> users,
+            string userId,
             string? fields)
         {
             var usersDto = _mapper.Map<List<UserDto>>(users).Select(u =>
@@ -238,7 +244,7 @@ namespace Unit.Service
             return (users: shapedData, metaData: users.MetaData);
         }
 
-        private void ConfigUserDto(ref UserDto userDto, 
+        private void ConfigUserDto(ref UserDto userDto,
             string userId)
         {
             if (userDto.Private == true && !userDto.Followers.Contains(userId))
@@ -255,7 +261,7 @@ namespace Unit.Service
         }
 
         public async Task<string> UploadUserImageAsync(
-            string userId, 
+            string userId,
             FileInfo imageFile)
         {
             string fileName = $"users/{userId}/profile-picture.jpg";

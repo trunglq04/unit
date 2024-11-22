@@ -72,10 +72,10 @@ namespace Unit.Repository
                 filterExpression,
                 expressionAttributeValues
                 );
-            var listPosts = posts.listEntity.Sort(request.OrderBy).ToList();
+            var listPosts = posts.listEntity.Sort(request.OrderBy).Skip((request.PageNumber - 1) * request.Size).Take(request.Size).ToList();
 
 
-            return new PagedList<Post>(listPosts, posts.pageKey, request.Size);
+            return new PagedList<Post>(listPosts, posts.pageKey, request.Size, request.PageNumber);
         }
 
         //userId o day la id cua nguoi gui request
@@ -113,9 +113,9 @@ namespace Unit.Repository
                 filterExpression,
                 expressionAttributeValues
                 );
-            var listPosts = posts.listEntity.Sort(request.OrderBy).ToList();
+            var listPosts = posts.listEntity.Sort(request.OrderBy).Skip((request.PageNumber - 1) * request.Size).Take(request.Size).ToList();
 
-            return new PagedList<Post>(listPosts, posts.pageKey, request.Size);
+            return new PagedList<Post>(listPosts, posts.pageKey, request.Size, request.PageNumber);
         }
 
         public async Task UpdatePostAsync(Post post)

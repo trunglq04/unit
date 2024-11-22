@@ -1,6 +1,7 @@
 ﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.Model;
+using Amazon.Runtime.Internal;
 using System.Text;
 using Unit.Entities.Exceptions;
 using Unit.Entities.Exceptions.Messages;
@@ -48,9 +49,9 @@ namespace Unit.Repository
                 filterExpression,
                 expressionAttributeValues
             );
-            var listUser = users.listEntity.Sort(userParameters.OrderBy).ToList();
+            var listUser = users.listEntity.Sort(userParameters.OrderBy).Skip((userParameters.PageNumber - 1) * userParameters.Size).Take(userParameters.Size).ToList();
 
-            return new PagedList<User>(listUser, users.pageKey, userParameters.Size);
+            return new PagedList<User>(listUser, users.pageKey, userParameters.Size, userParameters.PageNumber);
         }
 
         public async Task<PagedList<User>> GetUsersExceptAsync(UserParameters userParameters, string userId)
@@ -85,11 +86,11 @@ namespace Unit.Repository
                 filterExpression,
                 expressionAttributeValues
                 );
-            var listUser = users.listEntity.Sort(userParameters.OrderBy).ToList();
+            var listUser = users.listEntity.Sort(userParameters.OrderBy).Skip((userParameters.PageNumber - 1) * userParameters.Size).Take(userParameters.Size).ToList();
 
 
-            return new PagedList<User>(listUser, users.pageKey, userParameters.Size);
-        }    
+            return new PagedList<User>(listUser, users.pageKey, userParameters.Size, userParameters.PageNumber);
+        }
 
         public async Task UpdateUserAsync(User user)
         {
