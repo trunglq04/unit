@@ -53,6 +53,7 @@ namespace Unit.Service
             }
             else
             {
+                userDto.isFollowed = null;
                 foreach (var followRequest in userDto.FollowRequests)
                 {
                     var userInFollowRequest = await _repository.User.GetUserAsync(followRequest.FollowerId);
@@ -246,6 +247,7 @@ namespace Unit.Service
                 userDto.Followers = null;
                 userDto.Following = null;
             }
+            if (userDto.Followers.Contains(userId)) userDto.isFollowed = true;
             userDto.PhoneNumber = null;
             userDto.BlockedUsers = null;
             userDto.DateOfBirth = null;
