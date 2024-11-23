@@ -11,6 +11,7 @@ namespace Unit.Repository
         public readonly Lazy<INestedReplyRepository> _nestedReplyRepository;
         public readonly Lazy<IPostRepository> _postRepository;
         public readonly Lazy<IPostLikeListsRepository> _postLikeListsRepository;
+        public readonly Lazy<INotificationRepository> _notificationRepository;
 
 
         public RepositoryManager(IDynamoDBContext dynamoDBContext, IAmazonDynamoDB dynamoDbClient)
@@ -20,6 +21,7 @@ namespace Unit.Repository
             _commentRepository = new Lazy<ICommentRepository>(() => new CommentRepository(dynamoDBContext, dynamoDbClient));
             _nestedReplyRepository = new Lazy<INestedReplyRepository>(() => new NestedReplyRepository(dynamoDBContext, dynamoDbClient));
             _postLikeListsRepository = new Lazy<IPostLikeListsRepository>(() => new PostLikeListsRepository(dynamoDBContext, dynamoDbClient));
+            _notificationRepository = new Lazy<INotificationRepository>(() => new NotificationRepository(dynamoDBContext, dynamoDbClient));
         }
 
         public IUserRepository User => _userRepository.Value;
@@ -28,5 +30,7 @@ namespace Unit.Repository
 
         public IPostLikeListsRepository PostLikeLists => _postLikeListsRepository.Value;
         public INestedReplyRepository NestedReply => _nestedReplyRepository.Value;
+
+        public INotificationRepository Notification => _notificationRepository.Value;
     }
 }

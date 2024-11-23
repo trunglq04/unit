@@ -11,5 +11,7 @@
         INestedReplyRepository NestedReply { get; }
 
         IPostLikeListsRepository PostLikeLists { get; }
+
+        INotificationRepository Notification { get; }
     }
 }
