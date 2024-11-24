@@ -27,7 +27,7 @@ namespace Unit.API.Controllers
 
             Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(listNotificationDtos.metaData));
 
-            return Ok(listNotificationDtos);
+            return Ok(listNotificationDtos.notificationDtos);
         }
 
         [HttpDelete]
