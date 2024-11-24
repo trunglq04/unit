@@ -41,9 +41,9 @@ namespace Unit.Service
 
             foreach (var notificationDto in listNotificationDto)
             {
-                if (notificationDto.Metadata!.LastedActionUserId == null) continue;
+                if (notificationDto.Metadata!.LastestActionUserId == null) continue;
 
-                var LastedActionUser = await _repository.User.GetUserAsync(notificationDto.Metadata!.LastedActionUserId);
+                var LastedActionUser = await _repository.User.GetUserAsync(notificationDto.Metadata!.LastestActionUserId);
 
                 notificationDto.Metadata.ProfilePicture = LastedActionUser.ProfilePicture;
                 notificationDto.Metadata.UserName = LastedActionUser.UserName;
