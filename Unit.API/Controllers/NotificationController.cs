@@ -8,7 +8,7 @@ using Unit.Shared.RequestFeatures;
 
 namespace Unit.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/notification")]
     [ApiController]
     public class NotificationController : ControllerBase
     {
@@ -21,7 +21,7 @@ namespace Unit.API.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetAllNotification(RequestParameters parameters, [FromHeader(Name = "Authorization")] string token)
+        public async Task<IActionResult> GetAllNotification([FromQuery] NotificationParameters parameters, [FromHeader(Name = "Authorization")] string token)
         {
             var listNotificationDtos = await _service.NotificationService.GetAllNotificationOfUser(parameters, token);
 

@@ -24,15 +24,15 @@ namespace Unit.Repository
         public async Task UpdateNotification(Notification notification)
             => await UpdateAsync(notification);
 
-        public async Task<PagedList<Notification>> GetAllNotificationsOfUser(RequestParameters request, string userId)
+        public async Task<PagedList<Notification>> GetAllNotificationsOfUser(NotificationParameters request, string userId)
         {
             var keyConditionExpression = new StringBuilder();
 
-            keyConditionExpression.Append(" user_id = :userId");
+            keyConditionExpression.Append(" owner_id = :owner_id");
 
             var expressionAttributeValues = new Dictionary<string, AttributeValue>
             {
-                { ":userId", new AttributeValue { S = userId } },
+                { ":owner_id", new AttributeValue { S = userId } },
             };
 
             var notifications = await FindByConditionAsync(

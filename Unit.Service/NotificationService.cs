@@ -32,7 +32,7 @@ namespace Unit.Service
             await _repository.Notification.DeleteNotification(userId!, createdAt);
         }
 
-        public async Task<(List<NotificationDto> notificationDtos, MetaData metaData)> GetAllNotificationOfUser(RequestParameters parameters, string token)
+        public async Task<(List<NotificationDto> notificationDtos, MetaData metaData)> GetAllNotificationOfUser(NotificationParameters parameters, string token)
         {
             var userId = JwtHelper.GetPayloadData(token, "username");
             var listNotificationEntity = await _repository.Notification.GetAllNotificationsOfUser(parameters, userId!);

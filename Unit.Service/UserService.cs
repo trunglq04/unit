@@ -27,6 +27,8 @@ namespace Unit.Service
 
         private readonly S3Configuration _s3Config;
 
+        private readonly string _audience;
+
         public UserService(IRepositoryManager repository, ILoggerManager logger, IMapper mapper, IDataShaper<UserDto> userShaper, IAmazonS3 s3Client,
             IOptions<AWSConfiguration> configuration)
         {
@@ -36,6 +38,7 @@ namespace Unit.Service
             _userShaper = userShaper;
             _s3Client = s3Client;
             _s3Config = configuration.Value.S3Bucket!;
+            _audience = configuration.Value.Audience!;
         }
 
         public async Task<ExpandoObject> GetUserByIdAsync(UserParameters parameters, string token, string? id = null)
@@ -202,6 +205,7 @@ namespace Unit.Service
                 {
                     userFollowing.Followers.Add(id);
                     userEntity.Following.Add(userDtoForUpdate.Follow);
+
                 }
                 else
                 {

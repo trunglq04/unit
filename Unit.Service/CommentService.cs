@@ -1,7 +1,9 @@
 ﻿using Amazon.CognitoIdentityProvider.Model;
 using AutoMapper;
+using Microsoft.Extensions.Options;
 using System.Dynamic;
 using System.Xml.Linq;
+using Unit.Entities.ConfigurationModels;
 using Unit.Entities.Exceptions;
 using Unit.Entities.Exceptions.Messages;
 using Unit.Entities.Models;
@@ -21,14 +23,17 @@ namespace Unit.Service
         private readonly IMapper _mapper;
         private readonly IDataShaper<ResponseCommentDto> _commentShaper;
         private readonly IDataShaper<ResponseReplyDto> _replyShaper;
+        private readonly string _audience;
 
-        public CommentService(IRepositoryManager repository, ILoggerManager logger, IMapper mapper, IDataShaper<ResponseCommentDto> commentShaper, IDataShaper<ResponseReplyDto> replyShaper)
+
+        public CommentService(IRepositoryManager repository, ILoggerManager logger, IMapper mapper, IDataShaper<ResponseCommentDto> commentShaper, IDataShaper<ResponseReplyDto> replyShaper, IOptions<AWSConfiguration> configuration)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
             _commentShaper = commentShaper;
             _replyShaper = replyShaper;
+            _audience = configuration.Value.Audience;
         }
 
         public async Task<(IEnumerable<ExpandoObject> commentsDto, MetaData metaData)> GetCommentsByPostIdAsync(
@@ -52,7 +57,7 @@ namespace Unit.Service
             if (!userFromPost.Active)
                 throw new BadRequestException(UserExMsg.UserIsUnActive);
 
-            if (userFromPost.Private && !userFromPost.Followers.Contains(userId!))
+            if (!userFromPost.UserId.Equals(userId) && userFromPost.Private && !userFromPost.Followers.Contains(userId!))
                 throw new BadRequestException(UserExMsg.DoNotHavePermissionToView);
 
             var updatePost = new PostParameters()
@@ -76,6 +81,23 @@ namespace Unit.Service
             post.CommentCount++;
 
             await _repository.Post.UpdatePostAsync(post);
+
+            if (!userFromPost.UserId.Equals(userId))
+                await _repository.Notification.CreateNotification(new Notification()
+                {
+                    ActionType = "CommentPost",
+                    CreatedAt = DateTime.UtcNow,
+                    AffectedObjectId = post.PostId,
+                    IsSeen = false,
+                    OwnerId = userFromPost.UserId,
+                    Metadata = new NotificationMetadata()
+                    {
+                        LastestActionUserId = userId,
+                        ObjectId = commentEntity.CommentId,
+                        ActionCount = 0,
+                        LinkToAffectedObject = _audience + $"post?postId={post.PostId}&userId={post.UserId}"
+                    }
+                });
         }
 
         public async Task UpdateCommentAsync(
@@ -156,7 +178,6 @@ namespace Unit.Service
             post.CommentCount--;
 
             await _repository.Post.UpdatePostAsync(post);
-
         }
 
         public async Task<ExpandoObject> GetCommentByIdAsync(string postId, string commentId)
@@ -241,6 +262,8 @@ namespace Unit.Service
 
                 await _repository.NestedReply.CreateReplyAsync(nestedReply, newReply);
             }
+
+
         }
 
         public async Task UpdateReplyAsync(

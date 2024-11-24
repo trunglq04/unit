@@ -1,4 +1,5 @@
 ﻿using Amazon.DynamoDBv2.DataModel;
+using Unit.Entities.Converter;
 
 namespace Unit.Entities.Models
 {
@@ -23,7 +24,7 @@ namespace Unit.Entities.Models
         [DynamoDBProperty("metadata")]
         public NotificationMetadata Metadata { get; set; } = new();
 
-        [DynamoDBProperty("is_seen")]
+        [DynamoDBProperty("is_seen", typeof(DynamoDBNativeBooleanConverter))]
         public bool IsSeen { get; set; } = false;
 
     }
