@@ -205,7 +205,21 @@ namespace Unit.Service
                 {
                     userFollowing.Followers.Add(id);
                     userEntity.Following.Add(userDtoForUpdate.Follow);
-
+                    await _repository.Notification.CreateNotification(new Notification()
+                    {
+                        ActionType = "FollowRequest",
+                        CreatedAt = DateTime.UtcNow,
+                        AffectedObjectId = userFollowing.UserId,
+                        IsSeen = false,
+                        OwnerId = userFollowing.UserId,
+                        Metadata = new NotificationMetadata()
+                        {
+                            LastestActionUserId = userEntity.UserId,
+                            ObjectId = "",
+                            ActionCount = 0,
+                            LinkToAffectedObject = "",
+                        }
+                    });
                 }
                 else
                 {
@@ -219,6 +233,21 @@ namespace Unit.Service
                     else
                     {
                         userFollowing.FollowRequests.Add(new() { FollowerId = id, CreatedAt = DateTime.UtcNow });
+                        await _repository.Notification.CreateNotification(new Notification()
+                        {
+                            ActionType = "FollowRequest",
+                            CreatedAt = DateTime.UtcNow,
+                            AffectedObjectId = userFollowing.UserId,
+                            IsSeen = false,
+                            OwnerId = userFollowing.UserId,
+                            Metadata = new NotificationMetadata()
+                            {
+                                LastestActionUserId = userEntity.UserId,
+                                ObjectId = "",
+                                ActionCount = 0,
+                                LinkToAffectedObject = _audience + "api/user",
+                            }
+                        });
                     }
                 }
             }

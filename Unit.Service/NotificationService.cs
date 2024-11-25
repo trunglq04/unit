@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Options;
 using Unit.Entities.ConfigurationModels;
+using Unit.Entities.Exceptions;
 using Unit.Repository.Contracts;
 using Unit.Service.Contracts;
 using Unit.Service.Helper;
@@ -50,6 +51,16 @@ namespace Unit.Service
             }
 
             return (notificationDtos: listNotificationDto, listNotificationEntity.MetaData);
+        }
+
+        public async Task UpdateNotificationById(string token, string createdAt)
+        {
+            var userId = JwtHelper.GetPayloadData(token, "username");
+            var notificationOfUser = await _repository.Notification.GetNotificationById(userId, createdAt);
+            if (notificationOfUser is null) throw new BadRequestException("Notification is not exist!!");
+            notificationOfUser.IsSeen = true;
+
+            await _repository.Notification.UpdateNotification(notificationOfUser);
         }
     }
 }

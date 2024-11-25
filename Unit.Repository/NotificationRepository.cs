@@ -49,5 +49,10 @@ namespace Unit.Repository
 
             return new PagedList<Notification>(listNotifications, notifications.pageKey, request.Size, request.PageNumber);
         }
+
+        public async Task<Notification> GetNotificationById(string userId, string createdAt)
+        {
+            return await FindByIdAsync(userId, createdAt);
+        }
     }
 }
