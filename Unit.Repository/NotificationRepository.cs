@@ -52,7 +52,7 @@ namespace Unit.Repository
 
         public async Task<Notification> GetNotificationById(string userId, string createdAt)
         {
-            return await FindByIdAsync(userId, createdAt);
+            return await FindByIdAsync(userId, DateTime.Parse(createdAt));
         }
     }
 }
