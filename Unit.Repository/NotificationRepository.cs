@@ -19,7 +19,7 @@ namespace Unit.Repository
             => await CreateAsync(notification);
 
         public async Task DeleteNotification(string ownerId, string createdAt)
-            => await DeleteAsync(ownerId, createdAt);
+            => await DeleteAsync(ownerId, DateTime.Parse(createdAt));
 
         public async Task UpdateNotification(Notification notification)
             => await UpdateAsync(notification);
