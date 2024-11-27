@@ -281,10 +281,14 @@ namespace Unit.Service
                 userDto.Following = null;
             }
             if (userDto.Followers != null && userDto.Followers.Contains(userId)) userDto.isFollowed = true;
+            if (userDto.FollowRequests.Any(followRequest => followRequest.FollowerId.Equals(userId)))
+            {
+                userDto.FollowRequests = userDto.FollowRequests.Where(followRequest => followRequest.FollowerId.Equals(userId)).ToList();
+            }
+            else userDto.FollowRequests = null;
             userDto.PhoneNumber = null;
             userDto.BlockedUsers = null;
             userDto.DateOfBirth = null;
-            userDto.FollowRequests = null;
             userDto.LastModified = null;
             userDto.ConversationId = null;
         }
