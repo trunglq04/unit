@@ -173,7 +173,7 @@ namespace Unit.Service
                         await _repository.Notification.CreateNotification(new Notification()
                         {
                             ActionType = "LikePost",
-                            CreatedAt = DateTime.UtcNow,
+                            CreatedAt = DateTime.UtcNow.ToString(),
                             AffectedObjectId = postId,
                             IsSeen = false,
                             OwnerId = post.UserId,
@@ -197,6 +197,12 @@ namespace Unit.Service
                             UserId = userId
                         });
                     postEntity.LikeCount -= 1;
+                    if (!post.UserId.Equals(userId))
+                    {
+                        var notification = (await _repository.Notification.GetNotificationsOfUser(new(), post.UserId, postEntity.PostId, "LikePost", userId)).FirstOrDefault();
+                        if (notification != null) await _repository.Notification.DeleteNotification(notification.OwnerId, notification.CreatedAt);
+
+                    }    
                 }
             }
 

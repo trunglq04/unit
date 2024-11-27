@@ -19,7 +19,7 @@ namespace Unit.Entities.Models
         public string? AffectedObjectId { get; set; }  // For getting Post Content
 
         [DynamoDBRangeKey("created_at")]
-        public DateTime CreatedAt { get; set; }
+        public string CreatedAt { get; set; }
 
         [DynamoDBProperty("metadata")]
         public NotificationMetadata Metadata { get; set; } = new();

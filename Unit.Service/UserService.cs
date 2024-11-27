@@ -161,6 +161,9 @@ namespace Unit.Service
                 await _repository.User.UpdateUserAsync(userFollower);
 
                 userEntity.Followers.Remove(userDtoForUpdate.Follower);
+                var notification = (await _repository.Notification.GetNotificationsOfUser(new(), userEntity.UserId, userEntity.UserId, "FollowRequest", userFollower.UserId)).FirstOrDefault();
+                if (notification != null) await _repository.Notification.DeleteNotification(notification.OwnerId, notification.CreatedAt);
+
             }
             else if (userDtoForUpdate.IsAcceptFollower != null && userEntity.FollowRequests.Any(followRequest => followRequest.FollowerId.Equals(userDtoForUpdate.Follower)))
             {
@@ -177,7 +180,11 @@ namespace Unit.Service
                 {
                     var indexOfFollowRequest = userEntity.FollowRequests.FindIndex(0, 1, (followRequest => followRequest.FollowerId.Equals(id)));
                     if (indexOfFollowRequest >= 0)
+                    {
                         userEntity.FollowRequests.RemoveAt(indexOfFollowRequest);
+                        var notification = (await _repository.Notification.GetNotificationsOfUser(new(), userEntity.UserId, userEntity.UserId, "FollowRequest", userFollower.UserId)).FirstOrDefault();
+                        if (notification != null) await _repository.Notification.DeleteNotification(notification.OwnerId, notification.CreatedAt);
+                    }
                 }
             }
             await _repository.User.UpdateUserAsync(userFollower);
@@ -198,6 +205,8 @@ namespace Unit.Service
             {
                 userFollowing.Followers.Remove(id);
                 userEntity.Following.Remove(userDtoForUpdate.Follow);
+                var notification = (await _repository.Notification.GetNotificationsOfUser(new(), userFollowing.UserId, userFollowing.UserId, "FollowRequest", userEntity.UserId)).FirstOrDefault();
+                if (notification != null) await _repository.Notification.DeleteNotification(notification.OwnerId, notification.CreatedAt);
             }
             else
             {
@@ -208,7 +217,7 @@ namespace Unit.Service
                     await _repository.Notification.CreateNotification(new Notification()
                     {
                         ActionType = "FollowRequest",
-                        CreatedAt = DateTime.UtcNow,
+                        CreatedAt = DateTime.UtcNow.ToString(),
                         AffectedObjectId = userFollowing.UserId,
                         IsSeen = false,
                         OwnerId = userFollowing.UserId,
@@ -228,7 +237,12 @@ namespace Unit.Service
                     {
                         var indexOfFollowRequest = userFollowing.FollowRequests.FindIndex(0, 1, (followRequest => followRequest.FollowerId.Equals(id)));
                         if (indexOfFollowRequest >= 0)
+                        {
+
                             userFollowing.FollowRequests.RemoveAt(indexOfFollowRequest);
+                            var notification = (await _repository.Notification.GetNotificationsOfUser(new(), userFollowing.UserId, userFollowing.UserId, "FollowRequest", userEntity.UserId)).FirstOrDefault();
+                            if (notification != null) await _repository.Notification.DeleteNotification(notification.OwnerId, notification.CreatedAt);
+                        }
                     }
                     else
                     {
@@ -236,7 +250,7 @@ namespace Unit.Service
                         await _repository.Notification.CreateNotification(new Notification()
                         {
                             ActionType = "FollowRequest",
-                            CreatedAt = DateTime.UtcNow,
+                            CreatedAt = DateTime.UtcNow.ToString(),
                             AffectedObjectId = userFollowing.UserId,
                             IsSeen = false,
                             OwnerId = userFollowing.UserId,
