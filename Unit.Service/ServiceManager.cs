@@ -35,7 +35,7 @@ namespace Unit.Service
             _userService = new Lazy<IUserService>(() => new UserService(repositoryManager, logger, mapper, userShaper, s3Client, configuration));
             _authenticationService = new Lazy<IAuthenticationService>(() => new AuthenticationService(repositoryManager, logger, mapper, cognitoProvider, configuration));
             _postService = new Lazy<IPostService>(() => new PostService(repositoryManager, logger, mapper, postShaper, s3Client, configuration));
-            _commentService = new Lazy<ICommentService>(() => new CommentService(repositoryManager, logger, mapper, commentShaper, replyShaper));
+            _commentService = new Lazy<ICommentService>(() => new CommentService(repositoryManager, logger, mapper, commentShaper, replyShaper, configuration));
             _notificationService = new Lazy<INotificationService>(() => new NotificationService(repositoryManager, logger, mapper));
         }
 

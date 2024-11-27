@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Options;
 using Unit.Entities.ConfigurationModels;
+using Unit.Entities.Exceptions;
 using Unit.Repository.Contracts;
 using Unit.Service.Contracts;
 using Unit.Service.Helper;
@@ -32,7 +33,7 @@ namespace Unit.Service
             await _repository.Notification.DeleteNotification(userId!, createdAt);
         }
 
-        public async Task<(List<NotificationDto> notificationDtos, MetaData metaData)> GetAllNotificationOfUser(RequestParameters parameters, string token)
+        public async Task<(List<NotificationDto> notificationDtos, MetaData metaData)> GetAllNotificationOfUser(NotificationParameters parameters, string token)
         {
             var userId = JwtHelper.GetPayloadData(token, "username");
             var listNotificationEntity = await _repository.Notification.GetAllNotificationsOfUser(parameters, userId!);
@@ -41,9 +42,9 @@ namespace Unit.Service
 
             foreach (var notificationDto in listNotificationDto)
             {
-                if (notificationDto.Metadata!.LastedActionUserId == null) continue;
+                if (notificationDto.Metadata!.LastestActionUserId == null) continue;
 
-                var LastedActionUser = await _repository.User.GetUserAsync(notificationDto.Metadata!.LastedActionUserId);
+                var LastedActionUser = await _repository.User.GetUserAsync(notificationDto.Metadata!.LastestActionUserId);
 
                 notificationDto.Metadata.ProfilePicture = LastedActionUser.ProfilePicture;
                 notificationDto.Metadata.UserName = LastedActionUser.UserName;
@@ -51,5 +52,16 @@ namespace Unit.Service
 
             return (notificationDtos: listNotificationDto, listNotificationEntity.MetaData);
         }
+
+        public async Task UpdateNotificationById(string token, string createdAt)
+        {
+            var userId = JwtHelper.GetPayloadData(token, "username");
+            var notificationOfUser = await _repository.Notification.GetNotificationById(userId, createdAt);
+            if (notificationOfUser is null) throw new BadRequestException("Notification is not exist!!");
+            notificationOfUser.IsSeen = true;
+
+            await _repository.Notification.UpdateNotification(notificationOfUser);
+        }
+
     }
 }

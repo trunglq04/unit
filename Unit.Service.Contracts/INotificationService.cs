@@ -6,8 +6,11 @@ namespace Unit.Service.Contracts
     public interface INotificationService
     {
         public Task DeleteNotificationById(string token, string createdAt);
+      
+        public Task UpdateNotificationById(string token, string createdAt);
 
-        public Task<(List<NotificationDto> notificationDtos, MetaData metaData)> GetAllNotificationOfUser(RequestParameters parameters, string token);
+        public Task<(List<NotificationDto> notificationDtos, MetaData metaData)> GetAllNotificationOfUser(NotificationParameters parameters, string token);
+
 
     }
 }

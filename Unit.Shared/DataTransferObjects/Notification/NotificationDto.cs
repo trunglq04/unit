@@ -14,6 +14,7 @@
 
         public bool IsSeen { get; set; }
 
-        public DateTime CreatedAt { get; set; }
+        public string CreatedAt { get; set; }
+
     }
 }

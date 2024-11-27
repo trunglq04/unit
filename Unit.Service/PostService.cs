@@ -1,6 +1,7 @@
 using Amazon.S3;
 using Amazon.S3.Model;
 using AutoMapper;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using Unit.Entities.ConfigurationModels;
@@ -29,6 +30,7 @@ namespace Unit.Service
         private readonly IAmazonS3 _s3Client;
 
         private readonly S3Configuration _s3Config;
+        private readonly string _audience;
 
         public PostService(IRepositoryManager repository, ILoggerManager logger, IMapper mapper, IDataShaper<PostDto> postShaper, IAmazonS3 s3Client, IOptions<AWSConfiguration> configuration)
         {
@@ -38,6 +40,7 @@ namespace Unit.Service
             _postShaper = postShaper;
             _s3Client = s3Client;
             _s3Config = configuration.Value.S3Bucket!;
+            _audience = configuration.Value.Audience!;
         }
 
         public async Task CreatePost(PostDtoForCreation post, string userId, List<string>? mediaPath = null)
@@ -50,7 +53,7 @@ namespace Unit.Service
             postEntity.CreatedAt = DateTime.UtcNow;
             postEntity.LastModified = DateTime.UtcNow;
             postEntity.UserId = userId;
-            postEntity.IsPrivate = user.Private;
+            postEntity.IsPrivate = user.Private.Value;
             postEntity.UserName = user.UserName;
             postEntity.ProfilePicture = user.ProfilePicture;
 
@@ -70,7 +73,7 @@ namespace Unit.Service
             {
                 var user = await _repository.User.GetUserAsync(request.UserId!);
 
-                if (user.Private && ((user.Followers.Any() && !user.Followers.Contains(userId!)) || !user.Followers.Any()))
+                if (user.Private.Value && ((user.Followers.Any() && !user.Followers.Contains(userId!)) || !user.Followers.Any()))
                     throw new BadRequestException(UserExMsg.DoNotHavePermissionToView);
                 request.IsHidden = false;
             }
@@ -129,7 +132,7 @@ namespace Unit.Service
             {
                 var user = await _repository.User.GetUserAsync(post.UserId);
 
-                if ((user.Private && !user.Followers.Contains(userId!)) || (post.Hidden != null && (bool)post.Hidden) || (post.Content != null && !string.IsNullOrWhiteSpace(post.Content)))
+                if ((user.Private.Value && !user.Followers.Contains(userId!)) || (post.Hidden != null && (bool)post.Hidden) || (post.Content != null && !string.IsNullOrWhiteSpace(post.Content)))
                     throw new BadRequestException(UserExMsg.DoNotHavePermissionToView);
             }
 
@@ -164,6 +167,26 @@ namespace Unit.Service
                         UserId = userId
                     });
                     postEntity.LikeCount += 1;
+
+
+                    if (!post.UserId.Equals(userId))
+                        await _repository.Notification.CreateNotification(new Notification()
+                        {
+                            ActionType = "LikePost",
+                            CreatedAt = DateTime.UtcNow.ToString(),
+                            AffectedObjectId = postId,
+                            IsSeen = false,
+                            OwnerId = post.UserId,
+                            Metadata = new NotificationMetadata()
+                            {
+                                LastestActionUserId = userId,
+                                ObjectId = "",
+                                ActionCount = 0,
+                                LinkToAffectedObject = _audience + $"post?postId={postId}&userId={post.UserId}"
+                            }
+                        });
+
+
                 }
                 else if (!(bool)post.Like && isLiked)
                 {
@@ -173,8 +196,13 @@ namespace Unit.Service
                             PostId = postId,
                             UserId = userId
                         });
-
                     postEntity.LikeCount -= 1;
+                    if (!post.UserId.Equals(userId))
+                    {
+                        var notification = (await _repository.Notification.GetNotificationsOfUser(new(), post.UserId, postEntity.PostId, "LikePost", userId)).FirstOrDefault();
+                        if (notification != null) await _repository.Notification.DeleteNotification(notification.OwnerId, notification.CreatedAt);
+
+                    }
                 }
             }
 

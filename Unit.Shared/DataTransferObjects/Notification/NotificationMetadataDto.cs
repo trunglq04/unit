@@ -2,7 +2,7 @@
 {
     public class NotificationMetadataDto
     {
-        public string? LastedActionUserId { get; set; }
+        public string? LastestActionUserId { get; set; }
 
         public string? ObjectId { get; set; }
 

@@ -11,6 +11,11 @@ namespace Unit.Repository.Contracts
 
         Task UpdateNotification(Notification notification);
 
-        Task<PagedList<Notification>> GetAllNotificationsOfUser(RequestParameters request, string userId);
+        Task<PagedList<Notification>> GetAllNotificationsOfUser(NotificationParameters request, string userId);
+
+        Task<Notification> GetNotificationById(string userId, string createdAt);
+
+        Task<PagedList<Notification>> GetNotificationsOfUser(NotificationParameters request, string userId, string affectedObjectId, string actionType, string lastestActionUserId);
+
     }
 }
