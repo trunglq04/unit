@@ -169,16 +169,18 @@ namespace Unit.Service
             {
                 if ((bool)userDtoForUpdate.IsAcceptFollower)
                 {
-                    var indexOfFollowRequest = userEntity.FollowRequests.FindIndex(0, 1, (followRequest => followRequest.FollowerId.Equals(userDtoForUpdate.Follower)));
+                    var indexOfFollowRequest = userEntity.FollowRequests.FindIndex(0, userEntity.FollowRequests.Count, (followRequest => followRequest.FollowerId.Equals(userDtoForUpdate.Follower)));
                     if (indexOfFollowRequest >= 0)
-                        userEntity.FollowRequests.RemoveAt(indexOfFollowRequest);
+                    {
 
-                    userFollower.Following.Add(id);
-                    userEntity.Followers.Add(userFollower.UserId);
+                        userEntity.FollowRequests.RemoveAt(indexOfFollowRequest);
+                        userFollower.Following.Add(id);
+                        userEntity.Followers.Add(userFollower.UserId);
+                    }
                 }
                 else
                 {
-                    var indexOfFollowRequest = userEntity.FollowRequests.FindIndex(0, 1, (followRequest => followRequest.FollowerId.Equals(id)));
+                    var indexOfFollowRequest = userEntity.FollowRequests.FindIndex(0, userEntity.FollowRequests.Count, (followRequest => followRequest.FollowerId.Equals(id)));
                     if (indexOfFollowRequest >= 0)
                     {
                         userEntity.FollowRequests.RemoveAt(indexOfFollowRequest);
@@ -224,9 +226,9 @@ namespace Unit.Service
                         Metadata = new NotificationMetadata()
                         {
                             LastestActionUserId = userEntity.UserId,
-                            ObjectId = "",
+                            ObjectId = "none",
                             ActionCount = 0,
-                            LinkToAffectedObject = "",
+                            LinkToAffectedObject = "none",
                         }
                     });
                 }
@@ -235,7 +237,7 @@ namespace Unit.Service
                     var isSendFollowRequest = userFollowing.FollowRequests.Any(followRequest => followRequest.FollowerId.Equals(id));
                     if (isSendFollowRequest)
                     {
-                        var indexOfFollowRequest = userFollowing.FollowRequests.FindIndex(0, 1, (followRequest => followRequest.FollowerId.Equals(id)));
+                        var indexOfFollowRequest = userFollowing.FollowRequests.FindIndex(0, userFollowing.FollowRequests.Count, (followRequest => followRequest.FollowerId.Equals(id)));
                         if (indexOfFollowRequest >= 0)
                         {
 
@@ -257,9 +259,9 @@ namespace Unit.Service
                             Metadata = new NotificationMetadata()
                             {
                                 LastestActionUserId = userEntity.UserId,
-                                ObjectId = "",
+                                ObjectId = "none",
                                 ActionCount = 0,
-                                LinkToAffectedObject = _audience + "api/user",
+                                LinkToAffectedObject ="api/user",
                             }
                         });
                     }
