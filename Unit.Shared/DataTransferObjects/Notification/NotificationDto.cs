@@ -15,5 +15,6 @@
         public bool IsSeen { get; set; }
 
         public string CreatedAt { get; set; }
+
     }
 }

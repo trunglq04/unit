@@ -62,5 +62,6 @@ namespace Unit.Service
 
             await _repository.Notification.UpdateNotification(notificationOfUser);
         }
+
     }
 }

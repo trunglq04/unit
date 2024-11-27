@@ -35,15 +35,15 @@ namespace Unit.API.Controllers
         public async Task<IActionResult> UpdateNotification([FromBody] NotificationDtoForUpdate notificationDtoForUpdate, [FromHeader(Name = "Authorization")] string token)
         {
             await _service.NotificationService.UpdateNotificationById(token, notificationDtoForUpdate.CreatedAt);
-
-
-            return Ok();
+           
+           return Ok();
         }
 
         [HttpDelete]
         [Authorize]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> DeleteNotification([FromBody] NotificationDtoForDelete notificationDtoForDelete, [FromHeader(Name = "Authorization")] string token)
+
         {
             await _service.NotificationService.DeleteNotificationById(token, notificationDtoForDelete.CreatedAt);
 

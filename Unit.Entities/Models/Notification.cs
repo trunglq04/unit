@@ -1,5 +1,6 @@
-﻿using Amazon.DynamoDBv2.DataModel;
+using Amazon.DynamoDBv2.DataModel;
 using Unit.Entities.Converter;
+
 
 namespace Unit.Entities.Models
 {
@@ -20,6 +21,7 @@ namespace Unit.Entities.Models
 
         [DynamoDBRangeKey("created_at")]
         public string CreatedAt { get; set; }
+
 
         [DynamoDBProperty("metadata")]
         public NotificationMetadata Metadata { get; set; } = new();
