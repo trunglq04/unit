@@ -180,7 +180,7 @@ namespace Unit.Service
                 }
                 else
                 {
-                    var indexOfFollowRequest = userEntity.FollowRequests.FindIndex(0, userEntity.FollowRequests.Count, (followRequest => followRequest.FollowerId.Equals(id)));
+                    var indexOfFollowRequest = userEntity.FollowRequests.FindIndex(0, userEntity.FollowRequests.Count, (followRequest => followRequest.FollowerId.Equals(userDtoForUpdate.Follower)));
                     if (indexOfFollowRequest >= 0)
                     {
                         userEntity.FollowRequests.RemoveAt(indexOfFollowRequest);
@@ -212,7 +212,7 @@ namespace Unit.Service
             }
             else
             {
-                if (!userFollowing.Private)
+                if (!userFollowing.Private.Value)
                 {
                     userFollowing.Followers.Add(id);
                     userEntity.Following.Add(userDtoForUpdate.Follow);
@@ -261,7 +261,7 @@ namespace Unit.Service
                                 LastestActionUserId = userEntity.UserId,
                                 ObjectId = "none",
                                 ActionCount = 0,
-                                LinkToAffectedObject ="api/user",
+                                LinkToAffectedObject = "api/user",
                             }
                         });
                     }

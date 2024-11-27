@@ -57,7 +57,7 @@ namespace Unit.Service
             if (!userFromPost.Active)
                 throw new BadRequestException(UserExMsg.UserIsUnActive);
 
-            if (!userFromPost.UserId.Equals(userId) && userFromPost.Private && !userFromPost.Followers.Contains(userId!))
+            if (!userFromPost.UserId.Equals(userId) && userFromPost.Private.Value && !userFromPost.Followers.Contains(userId!))
                 throw new BadRequestException(UserExMsg.DoNotHavePermissionToView);
 
             var updatePost = new PostParameters()
@@ -156,7 +156,7 @@ namespace Unit.Service
             if (!userFromPost.Active)
                 throw new BadRequestException(UserExMsg.UserIsUnActive);
 
-            if (userFromPost.Private && !userFromPost.Followers.Contains(userId!))
+            if (userFromPost.Private.Value && !userFromPost.Followers.Contains(userId!))
                 throw new BadRequestException(UserExMsg.DoNotHavePermissionToView);
 
             var updatePost = new PostParameters()

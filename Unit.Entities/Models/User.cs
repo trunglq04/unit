@@ -39,7 +39,7 @@ namespace Unit.Entities.Models
         public bool Active { get; set; } // e.g., "active", "inactive"
 
         [DynamoDBProperty("private")]
-        public bool Private { get; set; } = false; // "public" or "private"
+        public bool? Private { get; set; } = false; // "public" or "private"
 
         [DynamoDBProperty("create_at")]
         public DateTime CreatedAt { get; set; }

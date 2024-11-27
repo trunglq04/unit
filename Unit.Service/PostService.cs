@@ -53,7 +53,7 @@ namespace Unit.Service
             postEntity.CreatedAt = DateTime.UtcNow;
             postEntity.LastModified = DateTime.UtcNow;
             postEntity.UserId = userId;
-            postEntity.IsPrivate = user.Private;
+            postEntity.IsPrivate = user.Private.Value;
             postEntity.UserName = user.UserName;
             postEntity.ProfilePicture = user.ProfilePicture;
 
@@ -73,7 +73,7 @@ namespace Unit.Service
             {
                 var user = await _repository.User.GetUserAsync(request.UserId!);
 
-                if (user.Private && ((user.Followers.Any() && !user.Followers.Contains(userId!)) || !user.Followers.Any()))
+                if (user.Private.Value && ((user.Followers.Any() && !user.Followers.Contains(userId!)) || !user.Followers.Any()))
                     throw new BadRequestException(UserExMsg.DoNotHavePermissionToView);
                 request.IsHidden = false;
             }
@@ -132,7 +132,7 @@ namespace Unit.Service
             {
                 var user = await _repository.User.GetUserAsync(post.UserId);
 
-                if ((user.Private && !user.Followers.Contains(userId!)) || (post.Hidden != null && (bool)post.Hidden) || (post.Content != null && !string.IsNullOrWhiteSpace(post.Content)))
+                if ((user.Private.Value && !user.Followers.Contains(userId!)) || (post.Hidden != null && (bool)post.Hidden) || (post.Content != null && !string.IsNullOrWhiteSpace(post.Content)))
                     throw new BadRequestException(UserExMsg.DoNotHavePermissionToView);
             }
 
@@ -202,7 +202,7 @@ namespace Unit.Service
                         var notification = (await _repository.Notification.GetNotificationsOfUser(new(), post.UserId, postEntity.PostId, "LikePost", userId)).FirstOrDefault();
                         if (notification != null) await _repository.Notification.DeleteNotification(notification.OwnerId, notification.CreatedAt);
 
-                    }    
+                    }
                 }
             }
 
