@@ -161,23 +161,32 @@ namespace Unit.Service
                 await _repository.User.UpdateUserAsync(userFollower);
 
                 userEntity.Followers.Remove(userDtoForUpdate.Follower);
+                var notification = (await _repository.Notification.GetNotificationsOfUser(new(), userEntity.UserId, userEntity.UserId, "FollowRequest", userFollower.UserId)).FirstOrDefault();
+                if (notification != null) await _repository.Notification.DeleteNotification(notification.OwnerId, notification.CreatedAt);
+
             }
             else if (userDtoForUpdate.IsAcceptFollower != null && userEntity.FollowRequests.Any(followRequest => followRequest.FollowerId.Equals(userDtoForUpdate.Follower)))
             {
                 if ((bool)userDtoForUpdate.IsAcceptFollower)
                 {
-                    var indexOfFollowRequest = userEntity.FollowRequests.FindIndex(0, 1, (followRequest => followRequest.FollowerId.Equals(userDtoForUpdate.Follower)));
+                    var indexOfFollowRequest = userEntity.FollowRequests.FindIndex(0, userEntity.FollowRequests.Count, (followRequest => followRequest.FollowerId.Equals(userDtoForUpdate.Follower)));
                     if (indexOfFollowRequest >= 0)
-                        userEntity.FollowRequests.RemoveAt(indexOfFollowRequest);
+                    {
 
-                    userFollower.Following.Add(id);
-                    userEntity.Followers.Add(userFollower.UserId);
+                        userEntity.FollowRequests.RemoveAt(indexOfFollowRequest);
+                        userFollower.Following.Add(id);
+                        userEntity.Followers.Add(userFollower.UserId);
+                    }
                 }
                 else
                 {
-                    var indexOfFollowRequest = userEntity.FollowRequests.FindIndex(0, 1, (followRequest => followRequest.FollowerId.Equals(id)));
+                    var indexOfFollowRequest = userEntity.FollowRequests.FindIndex(0, userEntity.FollowRequests.Count, (followRequest => followRequest.FollowerId.Equals(id)));
                     if (indexOfFollowRequest >= 0)
+                    {
                         userEntity.FollowRequests.RemoveAt(indexOfFollowRequest);
+                        var notification = (await _repository.Notification.GetNotificationsOfUser(new(), userEntity.UserId, userEntity.UserId, "FollowRequest", userFollower.UserId)).FirstOrDefault();
+                        if (notification != null) await _repository.Notification.DeleteNotification(notification.OwnerId, notification.CreatedAt);
+                    }
                 }
             }
             await _repository.User.UpdateUserAsync(userFollower);
@@ -198,6 +207,8 @@ namespace Unit.Service
             {
                 userFollowing.Followers.Remove(id);
                 userEntity.Following.Remove(userDtoForUpdate.Follow);
+                var notification = (await _repository.Notification.GetNotificationsOfUser(new(), userFollowing.UserId, userFollowing.UserId, "FollowRequest", userEntity.UserId)).FirstOrDefault();
+                if (notification != null) await _repository.Notification.DeleteNotification(notification.OwnerId, notification.CreatedAt);
             }
             else
             {
@@ -208,16 +219,16 @@ namespace Unit.Service
                     await _repository.Notification.CreateNotification(new Notification()
                     {
                         ActionType = "FollowRequest",
-                        CreatedAt = DateTime.UtcNow,
+                        CreatedAt = DateTime.UtcNow.ToString(),
                         AffectedObjectId = userFollowing.UserId,
                         IsSeen = false,
                         OwnerId = userFollowing.UserId,
                         Metadata = new NotificationMetadata()
                         {
                             LastestActionUserId = userEntity.UserId,
-                            ObjectId = "",
+                            ObjectId = "none",
                             ActionCount = 0,
-                            LinkToAffectedObject = "",
+                            LinkToAffectedObject = "none",
                         }
                     });
                 }
@@ -226,9 +237,14 @@ namespace Unit.Service
                     var isSendFollowRequest = userFollowing.FollowRequests.Any(followRequest => followRequest.FollowerId.Equals(id));
                     if (isSendFollowRequest)
                     {
-                        var indexOfFollowRequest = userFollowing.FollowRequests.FindIndex(0, 1, (followRequest => followRequest.FollowerId.Equals(id)));
+                        var indexOfFollowRequest = userFollowing.FollowRequests.FindIndex(0, userFollowing.FollowRequests.Count, (followRequest => followRequest.FollowerId.Equals(id)));
                         if (indexOfFollowRequest >= 0)
+                        {
+
                             userFollowing.FollowRequests.RemoveAt(indexOfFollowRequest);
+                            var notification = (await _repository.Notification.GetNotificationsOfUser(new(), userFollowing.UserId, userFollowing.UserId, "FollowRequest", userEntity.UserId)).FirstOrDefault();
+                            if (notification != null) await _repository.Notification.DeleteNotification(notification.OwnerId, notification.CreatedAt);
+                        }
                     }
                     else
                     {
@@ -236,16 +252,16 @@ namespace Unit.Service
                         await _repository.Notification.CreateNotification(new Notification()
                         {
                             ActionType = "FollowRequest",
-                            CreatedAt = DateTime.UtcNow,
+                            CreatedAt = DateTime.UtcNow.ToString(),
                             AffectedObjectId = userFollowing.UserId,
                             IsSeen = false,
                             OwnerId = userFollowing.UserId,
                             Metadata = new NotificationMetadata()
                             {
                                 LastestActionUserId = userEntity.UserId,
-                                ObjectId = "",
+                                ObjectId = "none",
                                 ActionCount = 0,
-                                LinkToAffectedObject = _audience + "api/user",
+                                LinkToAffectedObject ="api/user",
                             }
                         });
                     }

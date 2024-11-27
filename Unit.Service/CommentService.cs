@@ -86,7 +86,7 @@ namespace Unit.Service
                 await _repository.Notification.CreateNotification(new Notification()
                 {
                     ActionType = "CommentPost",
-                    CreatedAt = DateTime.UtcNow,
+                    CreatedAt = DateTime.UtcNow.ToString(),
                     AffectedObjectId = post.PostId,
                     IsSeen = false,
                     OwnerId = userFromPost.UserId,
