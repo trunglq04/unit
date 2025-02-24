@@ -1,0 +1,61 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34511.84
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Unit.API", "Unit.API\Unit.API.csproj", "{53546FD2-24D9-419F-9A1E-9A0A5D2C1ACA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Unit.Service", "Unit.Service\Unit.Service.csproj", "{1921B6A0-4E2C-41F1-BEF8-4A064E30B748}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Unit.Service.Contracts", "Unit.Service.Contracts\Unit.Service.Contracts.csproj", "{AEFEBFD9-83AF-4545-815D-C6A1F138ED19}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Unit.Entities", "Unit.Entities\Unit.Entities.csproj", "{FC1EDC78-B51D-4155-8CD7-78854FF858E5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Unit.Shared", "Unit.Shared\Unit.Shared.csproj", "{A51732A2-39E3-4041-8F02-A482C4069C64}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unit.Repository", "Unit.Repository\Unit.Repository.csproj", "{47E0480E-F9B2-48A4-B2E1-7EF74DFEEEB3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unit.Repository.Contracts", "Unit.Repository.Contracts\Unit.Repository.Contracts.csproj", "{23183C8C-3074-493E-A2B7-A544FE243436}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{53546FD2-24D9-419F-9A1E-9A0A5D2C1ACA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53546FD2-24D9-419F-9A1E-9A0A5D2C1ACA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53546FD2-24D9-419F-9A1E-9A0A5D2C1ACA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53546FD2-24D9-419F-9A1E-9A0A5D2C1ACA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1921B6A0-4E2C-41F1-BEF8-4A064E30B748}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1921B6A0-4E2C-41F1-BEF8-4A064E30B748}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1921B6A0-4E2C-41F1-BEF8-4A064E30B748}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1921B6A0-4E2C-41F1-BEF8-4A064E30B748}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AEFEBFD9-83AF-4545-815D-C6A1F138ED19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AEFEBFD9-83AF-4545-815D-C6A1F138ED19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AEFEBFD9-83AF-4545-815D-C6A1F138ED19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AEFEBFD9-83AF-4545-815D-C6A1F138ED19}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC1EDC78-B51D-4155-8CD7-78854FF858E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC1EDC78-B51D-4155-8CD7-78854FF858E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC1EDC78-B51D-4155-8CD7-78854FF858E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC1EDC78-B51D-4155-8CD7-78854FF858E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A51732A2-39E3-4041-8F02-A482C4069C64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A51732A2-39E3-4041-8F02-A482C4069C64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A51732A2-39E3-4041-8F02-A482C4069C64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A51732A2-39E3-4041-8F02-A482C4069C64}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47E0480E-F9B2-48A4-B2E1-7EF74DFEEEB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47E0480E-F9B2-48A4-B2E1-7EF74DFEEEB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47E0480E-F9B2-48A4-B2E1-7EF74DFEEEB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47E0480E-F9B2-48A4-B2E1-7EF74DFEEEB3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23183C8C-3074-493E-A2B7-A544FE243436}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23183C8C-3074-493E-A2B7-A544FE243436}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23183C8C-3074-493E-A2B7-A544FE243436}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23183C8C-3074-493E-A2B7-A544FE243436}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4821BE15-6B68-458A-8C54-21832A6ED493}
+	EndGlobalSection
+EndGlobal
